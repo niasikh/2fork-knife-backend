@@ -4,13 +4,24 @@
  * Environment Variables Validation Script
  * Run before deployment to ensure all required variables are set
  * Usage: ts-node scripts/check-env.ts
+ * CI Usage: CI=true ts-node scripts/check-env.ts
  */
 
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import * as fs from 'fs';
 
-// Load .env file
-dotenv.config({ path: path.join(__dirname, '../.env') });
+// Load .env file if not in CI
+if (!process.env.CI) {
+  const envPath = path.join(__dirname, '../.env');
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+  } else {
+    console.error('❌ .env file not found!');
+    console.error('   Run: cp .env.example .env');
+    process.exit(1);
+  }
+}
 
 interface EnvCheck {
   name: string;
@@ -65,8 +76,22 @@ const ENV_CHECKS: EnvCheck[] = [
   {
     name: 'STRIPE_SECRET_KEY',
     required: false,
-    validator: (v) => v.startsWith('sk_'),
+    validator: (v: string) => v.startsWith('sk_'),
     description: 'Stripe secret key',
+  },
+  {
+    name: 'STRIPE_WEBHOOK_SECRET',
+    required: false,
+    validator: (v: string) => v.startsWith('whsec_'),
+    description: 'Stripe webhook secret',
+  },
+
+  // Sentry (error tracking)
+  {
+    name: 'SENTRY_DSN',
+    required: false,
+    validator: (v: string) => v.startsWith('https://'),
+    description: 'Sentry DSN for error tracking',
   },
 
   // App

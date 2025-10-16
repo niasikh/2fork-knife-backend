@@ -40,41 +40,55 @@ import { WebhooksModule } from './webhooks/webhooks.module';
       envFilePath: '.env',
     }),
 
-    // Logging
+    // Logging - JSON format in production with requestId
     WinstonModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        transports: [
-          new winston.transports.Console({
-            format: winston.format.combine(
-              winston.format.timestamp(),
-              winston.format.colorize(),
-              winston.format.printf(({ timestamp, level, message, context }) => {
-                return `${timestamp} [${context || 'App'}] ${level}: ${message}`;
-              }),
-            ),
-          }),
-          ...(config.get('NODE_ENV') === 'production'
-            ? [
-                new winston.transports.File({
-                  filename: 'logs/error.log',
-                  level: 'error',
-                  format: winston.format.combine(
+      useFactory: (config: ConfigService) => {
+        const isProd = config.get('NODE_ENV') === 'production';
+        const logLevel = config.get('LOG_LEVEL') || 'info';
+
+        return {
+          level: logLevel,
+          transports: [
+            new winston.transports.Console({
+              format: isProd
+                ? winston.format.combine(
                     winston.format.timestamp(),
-                    winston.format.json(),
-                  ),
-                }),
-                new winston.transports.File({
-                  filename: 'logs/combined.log',
-                  format: winston.format.combine(
+                    winston.format.json(), // JSON in production
+                  )
+                : winston.format.combine(
                     winston.format.timestamp(),
-                    winston.format.json(),
+                    winston.format.colorize(),
+                    winston.format.printf(({ timestamp, level, message, context, requestId, userId }) => {
+                      const prefix = [timestamp, context, requestId, userId]
+                        .filter(Boolean)
+                        .join(' ');
+                      return `${prefix} ${level}: ${message}`;
+                    }),
                   ),
-                }),
-              ]
-            : []),
-        ],
-      }),
+            }),
+            ...(isProd
+              ? [
+                  new winston.transports.File({
+                    filename: 'logs/error.log',
+                    level: 'error',
+                    format: winston.format.combine(
+                      winston.format.timestamp(),
+                      winston.format.json(),
+                    ),
+                  }),
+                  new winston.transports.File({
+                    filename: 'logs/combined.log',
+                    format: winston.format.combine(
+                      winston.format.timestamp(),
+                      winston.format.json(),
+                    ),
+                  }),
+                ]
+              : []),
+          ],
+        };
+      },
     }),
 
     // Rate limiting

@@ -75,14 +75,15 @@
 
 ---
 
-## 🚧 Pending (Optional/Phase 2)
+## 🚧 Phase 2 (Optional Features)
 
 ### POS Connector Hub
-**Status**: Architecture documented, implementation pending
-- This is an optional separate service
-- Designed as adapter pattern for multiple POS vendors
-- Can be implemented when needed for specific integrations
-- Reference architecture included in requirements
+**Status**: Architecture complete, awaiting contract test validation
+- Separate microservice with adapter pattern
+- Framework ready for Syrve, Micros, Fina, Suphra
+- JSON Schema contracts defined in `contracts/pos/`
+- **Blocked until**: Contract tests pass in CI
+- **Deployment**: After main backend is stable in production
 
 ### GraphQL BFF
 **Status**: Module registered, implementation pending

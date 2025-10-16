@@ -6,14 +6,32 @@ import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import * as compression from 'compression';
 import { json } from 'express';
+import * as Sentry from '@sentry/node';
+import { ProfilingIntegration } from '@sentry/profiling-node';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
     rawBody: true, // Enable raw body for Stripe webhooks
+    bufferLogs: true,
   });
 
   const configService = app.get(ConfigService);
+
+  // Initialize Sentry
+  const sentryDsn = configService.get('SENTRY_DSN');
+  if (sentryDsn) {
+    Sentry.init({
+      dsn: sentryDsn,
+      environment: configService.get('NODE_ENV'),
+      integrations: [
+        new ProfilingIntegration(),
+      ],
+      tracesSampleRate: configService.get('NODE_ENV') === 'production' ? 0.1 : 1.0,
+      profilesSampleRate: 0.1,
+    });
+    console.log('✅ Sentry initialized');
+  }
 
   // Apply raw body middleware for Stripe webhooks
   app.use('/api/v1/webhooks/stripe', json({ verify: (req: any, res, buf) => {

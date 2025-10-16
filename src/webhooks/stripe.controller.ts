@@ -5,6 +5,7 @@ import Stripe from 'stripe';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Public } from '../common/decorators/public.decorator';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Controller('webhooks')
 export class StripeWebhookController {
@@ -13,6 +14,7 @@ export class StripeWebhookController {
 
   constructor(
     private config: ConfigService,
+    private prisma: PrismaService,
     @InjectQueue('payments') private paymentQueue: Queue,
   ) {
     this.stripe = new Stripe(this.config.get('STRIPE_SECRET_KEY'), {
@@ -52,11 +54,32 @@ export class StripeWebhookController {
 
     this.logger.log(`✅ Verified Stripe webhook: ${event.type}`);
 
+    // Check idempotency - prevent duplicate processing
+    const existing = await this.prisma.webhookEvent.findUnique({
+      where: { eventId: event.id },
+    });
+
+    if (existing) {
+      this.logger.log(`⏭️  Duplicate webhook ${event.id}, skipping`);
+      return res.status(HttpStatus.OK).json({ received: true, duplicate: true });
+    }
+
+    // Store webhook event for idempotency
+    await this.prisma.webhookEvent.create({
+      data: {
+        eventId: event.id,
+        provider: 'stripe',
+        eventType: event.type,
+        payload: event as any,
+        processed: false,
+      },
+    });
+
     // Enqueue job for async processing - return 200 fast
     try {
       await this.enqueueWebhookEvent(event);
       
-      // Return 200 immediately (Stripe requirement)
+      // Return 200 immediately (Stripe requirement - must be < 100ms)
       return res.status(HttpStatus.OK).json({ received: true });
     } catch (error) {
       this.logger.error(`Failed to enqueue webhook: ${error.message}`);

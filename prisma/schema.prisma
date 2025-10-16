@@ -785,3 +785,26 @@ model AuditLog {
   @@map("audit_logs")
 }
 
+// ============================================
+// WEBHOOK EVENTS (Idempotency)
+// ============================================
+
+model WebhookEvent {
+  id              String   @id @default(cuid())
+  eventId         String   @unique // Stripe event.id or other provider event ID
+  provider        String   // "stripe", "twilio", "pos-vendor"
+  eventType       String   // "payment_intent.succeeded", etc.
+  payload         Json
+  processed       Boolean  @default(false)
+  processedAt     DateTime?
+  error           String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([eventId, provider])
+  @@index([processed])
+  @@index([createdAt])
+  @@map("webhook_events")
+}
+

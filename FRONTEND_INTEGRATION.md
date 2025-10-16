@@ -21,11 +21,16 @@ Create `restaurant-reservation-app/services/api.ts`:
 ```typescript
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
-// Configuration
+// Configuration - driven by environment
 const API_BASE_URL = __DEV__ 
-  ? 'http://localhost:3000/api/v1'  // Local development
-  : 'https://fork-knife-backend.onrender.com/api/v1'; // Production
+  ? process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api/v1'  // Local development
+  : Constants.expoConfig?.extra?.apiUrl || process.env.EXPO_PUBLIC_API_URL; // Production
+
+const GRAPHQL_URL = __DEV__
+  ? process.env.EXPO_PUBLIC_GRAPHQL_URL || 'http://localhost:3000/graphql'
+  : Constants.expoConfig?.extra?.graphqlUrl || process.env.EXPO_PUBLIC_GRAPHQL_URL;
 
 // Create axios instance
 export const api = axios.create({
@@ -475,19 +480,36 @@ export default function CreateReservationScreen({ route, navigation }) {
 
 ## 🔐 Environment Configuration
 
+### **Option 1: Using app.json (Expo)**
+
+Edit `restaurant-reservation-app/app.json`:
+
+```json
+{
+  "expo": {
+    "extra": {
+      "apiUrl": "https://your-backend.fly.dev/api/v1",
+      "graphqlUrl": "https://your-backend.fly.dev/graphql"
+    }
+  }
+}
+```
+
+### **Option 2: Using .env**
+
 Create `restaurant-reservation-app/.env`:
 
 ```bash
-# Development
-API_URL_DEV=http://localhost:3000/api/v1
-GRAPHQL_URL_DEV=http://localhost:3000/graphql
+# Local Development
+EXPO_PUBLIC_API_URL=http://localhost:3000/api/v1
+EXPO_PUBLIC_GRAPHQL_URL=http://localhost:3000/graphql
 
-# Production
-API_URL_PROD=https://fork-knife-backend.onrender.com/api/v1
-GRAPHQL_URL_PROD=https://fork-knife-backend.onrender.com/graphql
+# For production, set in EAS or build config:
+# EXPO_PUBLIC_API_URL=https://your-backend.fly.dev/api/v1
+# EXPO_PUBLIC_GRAPHQL_URL=https://your-backend.fly.dev/graphql
 ```
 
-Use with `react-native-dotenv` or expo-constants.
+**Important**: Update the URLs after you deploy your backend!
 
 ---
 
