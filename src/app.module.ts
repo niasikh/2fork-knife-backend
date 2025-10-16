@@ -5,16 +5,12 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { BullModule } from '@nestjs/bullmq';
-import { WinstonModule } from 'nest-winston';
-import * as winston from 'winston';
+import { LoggerModule } from 'nestjs-pino';
 import { join } from 'path';
 
 // Core modules
 import { PrismaModule } from './prisma/prisma.module';
 import { HealthModule } from './health/health.module';
-
-// GraphQL BFF
-import { GraphqlModule } from './graphql/graphql.module';
 
 // Feature modules
 import { AuthModule } from './modules/auth/auth.module';
@@ -40,53 +36,36 @@ import { WebhooksModule } from './webhooks/webhooks.module';
       envFilePath: '.env',
     }),
 
-    // Logging - JSON format in production with requestId
-    WinstonModule.forRootAsync({
+    // Logging - Pino with requestId correlation
+    LoggerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         const isProd = config.get('NODE_ENV') === 'production';
-        const logLevel = config.get('LOG_LEVEL') || 'info';
+        const logLevel = config.get('LOG_LEVEL') || (isProd ? 'info' : 'debug');
 
         return {
-          level: logLevel,
-          transports: [
-            new winston.transports.Console({
-              format: isProd
-                ? winston.format.combine(
-                    winston.format.timestamp(),
-                    winston.format.json(), // JSON in production
-                  )
-                : winston.format.combine(
-                    winston.format.timestamp(),
-                    winston.format.colorize(),
-                    winston.format.printf(({ timestamp, level, message, context, requestId, userId }) => {
-                      const prefix = [timestamp, context, requestId, userId]
-                        .filter(Boolean)
-                        .join(' ');
-                      return `${prefix} ${level}: ${message}`;
-                    }),
-                  ),
+          pinoHttp: {
+            level: logLevel,
+            transport: !isProd
+              ? {
+                  target: 'pino-pretty',
+                  options: {
+                    colorize: true,
+                    translateTime: 'SYS:standard',
+                    ignore: 'pid,hostname',
+                  },
+                }
+              : undefined, // JSON stdout in production
+            customProps: (req: any) => ({
+              requestId: req.requestId,
+              userId: req.user?.id,
             }),
-            ...(isProd
-              ? [
-                  new winston.transports.File({
-                    filename: 'logs/error.log',
-                    level: 'error',
-                    format: winston.format.combine(
-                      winston.format.timestamp(),
-                      winston.format.json(),
-                    ),
-                  }),
-                  new winston.transports.File({
-                    filename: 'logs/combined.log',
-                    format: winston.format.combine(
-                      winston.format.timestamp(),
-                      winston.format.json(),
-                    ),
-                  }),
-                ]
-              : []),
-          ],
+            autoLogging: true,
+            redact: {
+              paths: ['req.headers.authorization', 'req.headers.cookie'],
+              remove: true,
+            },
+          },
         };
       },
     }),
@@ -160,8 +139,10 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     PrismaModule,
     HealthModule,
 
-    // GraphQL
-    GraphqlModule,
+    // GraphQL BFF (conditional)
+    ...(process.env.ENABLE_GRAPHQL === 'true' 
+      ? [require('./graphql/graphql.module').GraphqlModule]
+      : []),
 
     // Features
     AuthModule,

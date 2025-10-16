@@ -18,6 +18,9 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
+  // Get API prefix first
+  const apiPrefix = configService.get('API_PREFIX') || 'api/v1';
+
   // Initialize Sentry
   const sentryDsn = configService.get('SENTRY_DSN');
   if (sentryDsn) {
@@ -33,8 +36,8 @@ async function bootstrap() {
     console.log('✅ Sentry initialized');
   }
 
-  // Apply raw body middleware for Stripe webhooks
-  app.use('/api/v1/webhooks/stripe', json({ verify: (req: any, res, buf) => {
+  // Apply raw body middleware for Stripe webhooks (aligned with API prefix)
+  app.use(`/${apiPrefix}/webhooks/stripe`, json({ verify: (req: any, res, buf) => {
     req.rawBody = buf;
   }}));
 
@@ -91,8 +94,7 @@ async function bootstrap() {
   // Middleware
   app.use(cookieParser());
 
-  // API prefix
-  const apiPrefix = configService.get('API_PREFIX') || 'api/v1';
+  // Set global API prefix
   app.setGlobalPrefix(apiPrefix);
 
   // Start server
