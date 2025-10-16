@@ -5,6 +5,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { NotificationsModule } from '../modules/notifications/notifications.module';
 import { NotificationProcessor } from './processors/notification.processor';
 import { PaymentProcessor } from './processors/payment.processor';
+import { ReservationJobsProcessor } from './processors/reservation-jobs.processor';
 
 @Module({
   imports: [
@@ -24,11 +25,12 @@ import { PaymentProcessor } from './processors/payment.processor';
       { name: 'notifications' },
       { name: 'payments' },
       { name: 'pos-sync' },
+      { name: 'reservation-jobs' },
     ),
     PrismaModule,
     NotificationsModule,
   ],
-  providers: [NotificationProcessor, PaymentProcessor],
+  providers: [NotificationProcessor, PaymentProcessor, ReservationJobsProcessor],
 })
 export class WorkerModule {}
 

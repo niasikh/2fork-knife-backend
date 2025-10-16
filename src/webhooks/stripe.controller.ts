@@ -1,4 +1,4 @@
-import { Controller, Post, Req, Res, Logger, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Req, Res, Logger, HttpStatus, RawBodyRequest } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
@@ -22,35 +22,46 @@ export class StripeWebhookController {
 
   @Public()
   @Post('stripe')
-  async handleStripeWebhook(@Req() req: Request, @Res() res: Response) {
+  async handleStripeWebhook(
+    @Req() req: RawBodyRequest<Request>,
+    @Res() res: Response,
+  ) {
     const sig = req.headers['stripe-signature'];
     const webhookSecret = this.config.get('STRIPE_WEBHOOK_SECRET');
+
+    if (!webhookSecret) {
+      this.logger.error('STRIPE_WEBHOOK_SECRET not configured');
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Webhook not configured');
+    }
 
     let event: Stripe.Event;
 
     try {
-      // Verify webhook signature
+      // Use raw body for signature verification
+      const rawBody = req.rawBody || req.body;
+      
       event = this.stripe.webhooks.constructEvent(
-        req.body, // Raw body required
+        rawBody,
         sig as string,
         webhookSecret,
       );
     } catch (err) {
-      this.logger.error(`Webhook signature verification failed: ${err.message}`);
+      this.logger.error(`⚠️ Webhook signature verification failed: ${err.message}`);
       return res.status(HttpStatus.BAD_REQUEST).send(`Webhook Error: ${err.message}`);
     }
 
-    this.logger.log(`Received Stripe webhook: ${event.type}`);
+    this.logger.log(`✅ Verified Stripe webhook: ${event.type}`);
 
-    // Enqueue job for async processing
+    // Enqueue job for async processing - return 200 fast
     try {
       await this.enqueueWebhookEvent(event);
       
-      // Return 200 immediately
+      // Return 200 immediately (Stripe requirement)
       return res.status(HttpStatus.OK).json({ received: true });
     } catch (error) {
       this.logger.error(`Failed to enqueue webhook: ${error.message}`);
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Failed to process webhook');
+      // Still return 200 to prevent Stripe retries
+      return res.status(HttpStatus.OK).json({ received: true, queued: false });
     }
   }
 

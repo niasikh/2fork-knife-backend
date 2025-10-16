@@ -52,10 +52,16 @@ USER nestjs
 # Expose port
 EXPOSE 3000
 
+# Copy entrypoint script
+COPY --chown=nestjs:nodejs scripts/entrypoint.sh ./scripts/
+
+# Make scripts executable
+RUN chmod +x ./scripts/entrypoint.sh
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s \
   CMD node -e "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
-# Start application with dumb-init
-CMD ["dumb-init", "node", "dist/main"]
+# Start application with migrations
+CMD ["dumb-init", "bash", "scripts/entrypoint.sh"]
 

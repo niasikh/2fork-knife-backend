@@ -104,31 +104,43 @@ import { WebhooksModule } from './webhooks/webhooks.module';
       }),
     }),
 
-    // GraphQL (BFF for mobile app)
-    GraphQLModule.forRootAsync<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-        sortSchema: true,
-        playground: config.get('NODE_ENV') === 'development',
-        introspection: config.get('NODE_ENV') === 'development',
-        context: ({ req, res }) => ({ req, res }),
-        formatError: (error) => {
-          console.error('GraphQL Error:', error);
-          return error;
-        },
-        // Production hardening
-        validationRules: config.get('NODE_ENV') === 'production' ? [
-          // Limit query depth to prevent deep nested attacks
-          require('graphql-depth-limit')(7),
-        ] : [],
-        // Disable introspection in production
-        plugins: config.get('NODE_ENV') === 'production' ? [
-          require('@apollo/server/plugin/disabled')({ disableIntrospection: true }),
-        ] : [],
-      }),
-    }),
+    // GraphQL (BFF for mobile app) - Optional
+    ...(process.env.ENABLE_GRAPHQL === 'true'
+      ? [
+          GraphQLModule.forRootAsync<ApolloDriverConfig>({
+            driver: ApolloDriver,
+            inject: [ConfigService],
+            useFactory: (config: ConfigService) => {
+              const isProd = config.get('NODE_ENV') === 'production';
+              
+              return {
+                autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+                sortSchema: true,
+                playground: !isProd, // Disabled in production
+                introspection: !isProd, // Disabled in production
+                context: ({ req, res }) => ({ req, res }),
+                formatError: (error) => {
+                  if (isProd) {
+                    // Don't leak error details in production
+                    return {
+                      message: error.message,
+                      code: error.extensions?.code || 'INTERNAL_SERVER_ERROR',
+                    };
+                  }
+                  return error;
+                },
+                // Production hardening
+                validationRules: isProd
+                  ? [
+                      // Limit query depth to prevent deep nested attacks
+                      require('graphql-depth-limit')(8),
+                    ]
+                  : [],
+              };
+            },
+          }),
+        ]
+      : []),
 
     // Core
     PrismaModule,

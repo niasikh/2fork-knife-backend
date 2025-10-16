@@ -1,122 +1,55 @@
-# 🍴 Fork & Knife Backend - Production Ready
+# 🍴 Fork & Knife Backend
 
-> **Modern, scalable restaurant reservation system built with NestJS, Prisma, and Supabase PostgreSQL**
+**Production-ready NestJS backend for restaurant reservation system**
 
-A complete restaurant booking platform backend featuring:
-- ✅ Real-time availability engine
-- ✅ Comprehensive reservation management
-- ✅ Restaurant operator console
-- ✅ Guest CRM system
-- ✅ Payment processing (Stripe)
-- ✅ Multi-channel notifications
-- ✅ Analytics & reporting
-- ✅ Role-based access control
-- 🚧 POS integration framework (optional, separate service)
-- 🚧 GraphQL BFF for mobile app (optional)
+**Tech Stack**: NestJS + TypeScript + Prisma + Supabase PostgreSQL + Redis + Stripe
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
-
-- **Node.js** >= 20.x
-- **npm** >= 9.x
-- **PostgreSQL** (Supabase recommended)
-- **Redis** (for queues & caching)
-- **Stripe Account** (for payments)
-
-### Installation
-
 ```bash
-# Clone the repository
-cd fork-knife-backend
+# 1. Install dependencies
+npm install --legacy-peer-deps
 
-# Install dependencies
-npm install
-
-# Copy environment file
+# 2. Copy and configure environment
 cp .env.example .env
+# Edit .env with your Supabase credentials
 
-# Edit .env with your credentials
-nano .env
+# 3. Start Redis
+docker run -d -p 6379:6379 redis:7-alpine
 
-# Generate Prisma client
+# 4. Setup database
 npm run prisma:generate
-
-# Run database migrations
 npm run prisma:migrate:deploy
 
-# (Optional) Seed database with sample data
-npm run prisma:seed
-```
-
-### Running the Application
-
-```bash
-# Development mode (with hot reload)
+# 5. Run the server
 npm run start:dev
-
-# Production mode
-npm run build
-npm run start:prod
-
-# With Docker
-docker-compose up -d
 ```
 
-The server will start on `http://localhost:3000`
+Server starts on `http://localhost:3000`
+
+**Full setup guide**: See [GETTING_STARTED.md](./GETTING_STARTED.md)
 
 ---
 
-## 📋 Environment Variables
+## ⚙️ Environment Variables
 
-Create a `.env` file in the root directory:
+**Required**:
+- `DATABASE_URL` - PostgreSQL connection (from Supabase)
+- `DIRECT_URL` - Connection pooling URL (from Supabase)
+- `JWT_SECRET` - Min 32 characters
+- `JWT_REFRESH_SECRET` - Min 32 characters
+- `REDIS_HOST` & `REDIS_PORT` - Redis connection
 
+**Optional**:
+- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` - For payments
+- `ENABLE_GRAPHQL` - Set to `"true"` to enable GraphQL
+- See `.env.example` for complete list
+
+**Validate environment**:
 ```bash
-# Database (Supabase PostgreSQL)
-DATABASE_URL="postgresql://user:password@db.supabase.co:5432/postgres"
-DIRECT_URL="postgresql://user:password@db.supabase.co:5432/postgres"
-
-# Supabase
-SUPABASE_URL="https://your-project.supabase.co"
-SUPABASE_ANON_KEY="your-anon-key"
-SUPABASE_SERVICE_KEY="your-service-role-key"
-
-# JWT
-JWT_SECRET="your-super-secret-jwt-key-min-32-chars"
-JWT_EXPIRATION="7d"
-JWT_REFRESH_SECRET="your-refresh-secret-min-32-chars"
-JWT_REFRESH_EXPIRATION="30d"
-
-# Stripe
-STRIPE_SECRET_KEY="sk_live_..."
-STRIPE_WEBHOOK_SECRET="whsec_..."
-STRIPE_CURRENCY="GEL"
-
-# Twilio (SMS)
-TWILIO_ACCOUNT_SID="your-account-sid"
-TWILIO_AUTH_TOKEN="your-auth-token"
-TWILIO_PHONE_NUMBER="+995555123456"
-
-# Email (SendGrid/SMTP)
-SMTP_HOST="smtp.sendgrid.net"
-SMTP_PORT="587"
-SMTP_USER="apikey"
-SMTP_PASSWORD="your-sendgrid-api-key"
-SMTP_FROM="noreply@forkknife.ge"
-
-# Redis
-REDIS_HOST="localhost"
-REDIS_PORT="6379"
-REDIS_PASSWORD=""
-
-# Application
-NODE_ENV="production"
-PORT="3000"
-FRONTEND_URL="http://localhost:3001"
-ADMIN_PANEL_URL="http://localhost:3002"
-DEFAULT_TIMEZONE="Asia/Tbilisi"
+npm run check:env
 ```
 
 ---
@@ -441,49 +374,22 @@ kubectl logs -f deployment/fork-knife-backend -n production
 
 ## 🚀 Deployment
 
-### Supabase Setup
+**Primary Strategy**:
+- **Backend API + Worker** → **Fly.io** or Render
+- **Frontend** → **Vercel**
+- **Database** → **Supabase**
+- **Redis** → **Upstash** or Fly Redis
 
-1. Create a new project at [supabase.com](https://supabase.com)
-2. Get your connection strings from Settings → Database
-3. Update `.env` with `DATABASE_URL` and `DIRECT_URL`
-4. Run migrations: `npm run prisma:migrate:deploy`
+**Complete deployment guide**: See [docs/DEPLOYMENT_STRATEGY.md](./docs/DEPLOYMENT_STRATEGY.md)
 
-### Stripe Setup
-
-1. Create account at [stripe.com](https://stripe.com)
-2. Get API keys from Dashboard → Developers → API keys
-3. Update `.env` with `STRIPE_SECRET_KEY`
-4. Set up webhooks for payment events
-
-### Twilio Setup (SMS)
-
-1. Create account at [twilio.com](https://twilio.com)
-2. Get Account SID and Auth Token
-3. Purchase a phone number
-4. Update `.env` with Twilio credentials
-
-### Redis Setup
-
+**Quick Fly.io Deploy**:
 ```bash
-# Using Docker
-docker run -d -p 6379:6379 redis:7-alpine
-
-# Or use Redis Cloud (free tier)
-# https://redis.com/try-free/
+fly launch
+fly secrets set DATABASE_URL="..." JWT_SECRET="..."
+fly deploy
 ```
 
-### Production Checklist
-
-- [ ] Set `NODE_ENV=production`
-- [ ] Use strong `JWT_SECRET` (min 32 chars)
-- [ ] Configure CORS with actual frontend URLs
-- [ ] Set up SSL/TLS certificates
-- [ ] Enable rate limiting
-- [ ] Configure backup strategy for database
-- [ ] Set up monitoring and alerts
-- [ ] Test all critical paths
-- [ ] Document API for frontend team
-- [ ] Set up CI/CD pipeline
+**Alternative platforms**: Render, Railway - See deployment docs
 
 ---
 

@@ -7,13 +7,17 @@ import {
   HttpStatus,
   Get,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, RefreshTokenDto } from './dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/public.decorator';
+import { ThrottleAuthGuard } from '../../common/guards/throttle-auth.guard';
 
 @Controller('auth')
+@UseGuards(ThrottleAuthGuard)
+@Throttle({ default: { limit: 100, ttl: 900000 } }) // 100 requests per 15 minutes
 export class AuthController {
   constructor(private authService: AuthService) {}
 

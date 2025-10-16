@@ -21,19 +21,39 @@ async function bootstrap() {
   }}));
 
   // Security
-  app.use(helmet());
+  app.use(helmet({
+    contentSecurityPolicy: configService.get('NODE_ENV') === 'production',
+  }));
   
   // Compression
   app.use(compression());
 
-  // CORS
+  // CORS - Strict in production
+  const isProd = configService.get('NODE_ENV') === 'production';
+  const allowedOrigins = isProd
+    ? [
+        configService.get('FRONTEND_URL'),
+        configService.get('ADMIN_PANEL_URL'),
+      ].filter(Boolean)
+    : [
+        configService.get('FRONTEND_URL'),
+        configService.get('ADMIN_PANEL_URL'),
+        'http://localhost:3001',
+        'http://localhost:3002',
+        'http://localhost:19006', // Expo dev
+      ].filter(Boolean);
+
   app.enableCors({
-    origin: [
-      configService.get('FRONTEND_URL'),
-      configService.get('ADMIN_PANEL_URL'),
-      'http://localhost:3001',
-      'http://localhost:3002',
-    ].filter(Boolean),
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   });
@@ -74,6 +94,17 @@ async function bootstrap() {
 ║                                                                ║
 ╚════════════════════════════════════════════════════════════════╝
   `);
+
+  // Graceful shutdown on SIGTERM
+  process.on('SIGTERM', async () => {
+    console.log('⚠️  SIGTERM received, shutting down gracefully...');
+    
+    // Stop accepting new requests
+    await app.close();
+    
+    console.log('✅ Graceful shutdown complete');
+    process.exit(0);
+  });
 }
 
 bootstrap();

@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://forkknife.ge/schemas/pos-status-event.json",
+  "title": "POS Status Event",
+  "description": "Status update from POS → Fork & Knife",
+  "type": "object",
+  "required": [
+    "event_type",
+    "vendor_reservation_id",
+    "occurred_at"
+  ],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "enum": ["SEATED", "UNSEATED", "CANCELLED", "NO_SHOW", "CHECK_CLOSED"]
+    },
+    "vendor_reservation_id": {
+      "type": "string",
+      "description": "POS system's reservation ID"
+    },
+    "table_id": {
+      "type": "string",
+      "description": "Table ID in POS system"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the event occurred (ISO 8601)"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Optional reason for cancellation/no-show"
+    },
+    "check_total_minor": {
+      "type": "integer",
+      "description": "Check total in minor units (for CHECK_CLOSED events)"
+    }
+  }
+}
+
