@@ -5,13 +5,20 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import * as compression from 'compression';
+import { json } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+    rawBody: true, // Enable raw body for Stripe webhooks
   });
 
   const configService = app.get(ConfigService);
+
+  // Apply raw body middleware for Stripe webhooks
+  app.use('/api/v1/webhooks/stripe', json({ verify: (req: any, res, buf) => {
+    req.rawBody = buf;
+  }}));
 
   // Security
   app.use(helmet());

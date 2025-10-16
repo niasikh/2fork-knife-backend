@@ -30,6 +30,7 @@ import { AvailabilityModule } from './modules/availability/availability.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { MenuModule } from './modules/menu/menu.module';
 import { WaitlistModule } from './modules/waitlist/waitlist.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
 
 @Module({
   imports: [
@@ -117,6 +118,15 @@ import { WaitlistModule } from './modules/waitlist/waitlist.module';
           console.error('GraphQL Error:', error);
           return error;
         },
+        // Production hardening
+        validationRules: config.get('NODE_ENV') === 'production' ? [
+          // Limit query depth to prevent deep nested attacks
+          require('graphql-depth-limit')(7),
+        ] : [],
+        // Disable introspection in production
+        plugins: config.get('NODE_ENV') === 'production' ? [
+          require('@apollo/server/plugin/disabled')({ disableIntrospection: true }),
+        ] : [],
       }),
     }),
 
@@ -141,6 +151,7 @@ import { WaitlistModule } from './modules/waitlist/waitlist.module';
     ReviewsModule,
     MenuModule,
     WaitlistModule,
+    WebhooksModule,
   ],
 })
 export class AppModule {}

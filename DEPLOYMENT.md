@@ -1,22 +1,41 @@
 # 🚀 Fork & Knife Backend - Deployment Guide
 
-## Quick Deployment Options
+## 🏗️ Recommended Architecture
 
-### Option 1: Render.com (Easiest - Recommended)
-**Free tier available, automatic deployments**
+**Primary Strategy**:
+- **Frontend** (Mobile/Admin) → **Vercel**
+- **Backend API + Worker** → **Fly.io**
+- **Database** → **Supabase PostgreSQL**
+- **Redis** → **Upstash** or Fly Redis
+- **POS Connector** → **Fly.io** (separate app, optional)
 
-### Option 2: Railway.app
-**Simple, generous free tier**
-
-### Option 3: DigitalOcean App Platform
-**$5/month, reliable**
-
-### Option 4: AWS/Google Cloud/Azure
-**Production-grade, more complex**
+See **[docs/DEPLOYMENT_STRATEGY.md](./docs/DEPLOYMENT_STRATEGY.md)** for complete guide!
 
 ---
 
-## 🎯 RECOMMENDED: Deploy to Render.com
+## Quick Deployment Options
+
+### Option 1: Fly.io (Recommended)
+✅ Best price/performance  
+✅ Deploy near Georgia  
+✅ Background workers  
+✅ $5/month starter  
+
+### Option 2: Render.com (Alternative)
+✅ Easier setup  
+✅ Free tier available  
+✅ Good documentation  
+✅ $7/month starter  
+
+### Option 3: Railway.app
+✅ Simple, generous free tier
+
+### Option 4: AWS/Google Cloud/Azure
+✅ Production-grade, more complex
+
+---
+
+## 🎯 QUICK START: Deploy to Fly.io (Recommended)
 
 ### Step 1: Prepare Your Code
 
