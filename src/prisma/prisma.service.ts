@@ -32,8 +32,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   }
 
   // Soft delete helper (if you add deletedAt field)
-  async softDelete(model: any, id: string) {
-    return this[model].update({
+  async softDelete(model: string, id: string) {
+    const prismaModel = (this as any)[model];
+    if (!prismaModel || typeof prismaModel.update !== 'function') {
+      throw new Error(`Invalid model: ${model}`);
+    }
+    return prismaModel.update({
       where: { id },
       data: { deletedAt: new Date() },
     });

@@ -132,7 +132,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
                 sortSchema: true,
                 playground: !isProd, // Disabled in production
                 introspection: !isProd, // Disabled in production
-                context: ({ req, res }) => ({ req, res }),
+                context: ({ req, res }: { req: any; res: any }) => ({ req, res }),
                 formatError: (error) => {
                   if (isProd) {
                     // Don't leak error details in production

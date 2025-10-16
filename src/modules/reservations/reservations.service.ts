@@ -478,8 +478,9 @@ export class ReservationsService {
     });
 
     if (!guest) {
-      const [firstName, ...lastNameParts] = name.split(' ');
-      const lastName = lastNameParts.join(' ') || firstName;
+      const nameParts = name.split(' ');
+      const firstName = nameParts[0] ?? 'Guest';
+      const lastName = nameParts.slice(1).join(' ') || firstName;
 
       guest = await this.prisma.guest.create({
         data: {
@@ -495,7 +496,9 @@ export class ReservationsService {
   }
 
   private calculateEndTime(startTime: string, durationMinutes: number): string {
-    const [hours, minutes] = startTime.split(':').map(Number);
+    const parts = startTime.split(':').map(Number);
+    const hours = parts[0] ?? 0;
+    const minutes = parts[1] ?? 0;
     const totalMinutes = hours * 60 + minutes + durationMinutes;
     const endHours = Math.floor(totalMinutes / 60) % 24;
     const endMinutes = totalMinutes % 60;
@@ -551,10 +554,10 @@ export class ReservationsService {
     const totalVisits = reservations.length;
     const avgPartySize =
       reservations.reduce((sum, r) => sum + r.partySize, 0) / totalVisits || null;
-    const lastVisitDate = reservations.length
-      ? reservations.sort((a, b) => b.reservationDate.getTime() - a.reservationDate.getTime())[0]
-          .reservationDate
-      : null;
+    const sortedReservations = reservations.sort(
+      (a, b) => b.reservationDate.getTime() - a.reservationDate.getTime()
+    );
+    const lastVisitDate = sortedReservations[0]?.reservationDate ?? null;
 
     await this.prisma.guest.update({
       where: { id: guestId },

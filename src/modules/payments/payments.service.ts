@@ -12,8 +12,12 @@ export class PaymentsService {
     private prisma: PrismaService,
     private config: ConfigService,
   ) {
-    this.stripe = new Stripe(this.config.get('STRIPE_SECRET_KEY'), {
-      apiVersion: '2024-12-18.acacia',
+    const stripeKey = this.config.get<string>('STRIPE_SECRET_KEY');
+    if (!stripeKey) {
+      throw new Error('STRIPE_SECRET_KEY is required');
+    }
+    this.stripe = new Stripe(stripeKey, {
+      apiVersion: '2023-10-16',
     });
   }
 
