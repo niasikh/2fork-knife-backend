@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - fork-knife-network
+    volumes:
+      - ./logs:/app/logs
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - fork-knife-network
+    command: redis-server --appendonly yes
+
+  # POS Connector Hub (Separate Service)
+  pos-connector:
+    build:
+      context: ./pos-connector-hub
+      dockerfile: Dockerfile
+    ports:
+      - "3100:3100"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_HOST=redis
+      - MAIN_API_URL=http://app:3000
+    depends_on:
+      - redis
+      - app
+    restart: unless-stopped
+    networks:
+      - fork-knife-network
+
+volumes:
+  redis_data:
+
+networks:
+  fork-knife-network:
+    driver: bridge
+
