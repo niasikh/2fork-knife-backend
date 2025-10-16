@@ -28,7 +28,7 @@
     "prisma:studio": "npx prisma studio",
     "prisma:seed": "npx ts-node prisma/seed.ts",
     "prisma:reset": "npx prisma migrate reset",
-    "check:env": "npx ts-node scripts/check-env.ts",
+    "check:env": "npx ts-node scripts/check-env.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.9.5",
