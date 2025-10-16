@@ -28,7 +28,8 @@
     "prisma:studio": "prisma studio",
     "prisma:seed": "ts-node prisma/seed.ts",
     "prisma:reset": "prisma migrate reset",
-    "check:env": "ts-node scripts/check-env.ts"
+    "check:env": "ts-node scripts/check-env.ts",
+    "postinstall": "npm run prisma:generate"
   },
   "dependencies": {
     "@apollo/server": "^4.9.5",
