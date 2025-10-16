@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
+import { PrismaService } from './prisma/prisma.service';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -96,6 +97,10 @@ async function bootstrap() {
 
   // Set global API prefix
   app.setGlobalPrefix(apiPrefix);
+
+  // Enable Prisma shutdown hooks
+  const prismaService = app.get(PrismaService);
+  await prismaService.enableShutdownHooks(app);
 
   // Start server
   const port = configService.get('PORT') || 3000;

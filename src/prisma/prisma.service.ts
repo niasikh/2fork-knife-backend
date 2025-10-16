@@ -1,66 +1,42 @@
-import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
+import { INestApplication, Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-  private readonly logger = new Logger(PrismaService.name);
-
   constructor() {
     super({
-      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL,
-        },
-      },
-      // Optimize for production
-      ...(process.env.NODE_ENV === 'production' && {
-        // Reduce connection pool size to save memory
-        __internal: {
-          engine: {
-            connectTimeout: 20000,
-            queryTimeout: 20000,
-          },
-        },
-      }),
+      log: process.env.NODE_ENV === 'development' ? ['query','warn','error'] : ['error'],
+      datasources: { db: { url: process.env.DATABASE_URL } },
+
+      // Small, defensive timeouts so the engine doesn't hoard memory
+      // @ts-ignore - __internal is intentionally undocumented
+      __internal: {
+        engine: {
+          // millis
+          connectTimeout: 20000,
+          queryTimeout: 20000
+        }
+      }
     });
   }
 
   async onModuleInit() {
-    try {
-      await this.$connect();
-      this.logger.log('✅ Database connected successfully');
-    } catch (error) {
-      this.logger.error('❌ Failed to connect to database', error);
-      throw error;
-    }
+    await this.$connect();
   }
 
   async onModuleDestroy() {
     await this.$disconnect();
-    this.logger.log('Database disconnected');
   }
 
-  // Helper for transactions with proper typing
-  async transaction<T>(fn: (prisma: PrismaClient) => Promise<T>): Promise<T> {
-    return this.$transaction(fn);
-  }
-
-  // Soft delete helper (if you add deletedAt field)
-  async softDelete(model: string, id: string) {
-    const prismaModel = (this as any)[model];
-    if (!prismaModel || typeof prismaModel.update !== 'function') {
-      throw new Error(`Invalid model: ${model}`);
-    }
-    return prismaModel.update({
-      where: { id },
-      data: { deletedAt: new Date() },
+  async enableShutdownHooks(app: INestApplication) {
+    process.on('beforeExit', async () => {
+      await this.$disconnect();
+      await app.close();
     });
-  }
-
-  // Clean disconnect for tests
-  async cleanDisconnect() {
-    await this.$disconnect();
   }
 }
 
+// Prevent multiple Prisma clients in dev/hot-reload
+const globalForPrisma = global as unknown as { prisma?: PrismaService };
+export const prisma = globalForPrisma.prisma ?? new PrismaService();
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
