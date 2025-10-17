@@ -51,9 +51,10 @@ export class StripeWebhookController {
         sig as string,
         webhookSecret,
       );
-    } catch (err) {
-      this.logger.error(`⚠️ Webhook signature verification failed: ${err.message}`);
-      return res.status(HttpStatus.BAD_REQUEST).send(`Webhook Error: ${err.message}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      this.logger.error(`⚠️ Webhook signature verification failed: ${msg}`);
+      return res.status(HttpStatus.BAD_REQUEST).send(`Webhook Error: ${msg}`);
     }
 
     this.logger.log(`✅ Verified Stripe webhook: ${event.type}`);
@@ -85,8 +86,9 @@ export class StripeWebhookController {
       
       // Return 200 immediately (Stripe requirement - must be < 100ms)
       return res.status(HttpStatus.OK).json({ received: true });
-    } catch (error) {
-      this.logger.error(`Failed to enqueue webhook: ${error.message}`);
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to enqueue webhook: ${msg}`);
       // Still return 200 to prevent Stripe retries
       return res.status(HttpStatus.OK).json({ received: true, queued: false });
     }

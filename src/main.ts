@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import cors from '@fastify/cors';
+import fastifyCors from '@fastify/cors';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from './prisma/prisma.service';
@@ -53,7 +53,7 @@ async function bootstrap() {
   app.use(compression());
 
   // CORS via Fastify plugin (not app.enableCors)
-  await app.register(cors, {
+  await app.register(fastifyCors, {
     origin: process.env.CORS_ORIGIN
       ? process.env.CORS_ORIGIN.split(',').map(s => s.trim())
       : true,

@@ -90,6 +90,10 @@
     "twilio": "^4.20.0",
     "typescript": "^5.3.3"
   },
+  "overrides": {
+    "fastify": "4.26.2",
+    "@fastify/cors": "8.4.2"
+  },
   "devDependencies": {
     "@nestjs/schematics": "^10.1.0",
     "@nestjs/testing": "^10.3.0",
