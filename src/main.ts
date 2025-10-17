@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import cors from '@fastify/cors';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from './prisma/prisma.service';
@@ -14,12 +15,8 @@ import { ProfilingIntegration } from '@sentry/profiling-node';
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({
-      logger: false // no per-request logs in prod
-    }),
-    {
-      bufferLogs: false
-    }
+    new FastifyAdapter({ logger: false }),
+    { bufferLogs: false }
   );
 
   const configService = app.get(ConfigService);
@@ -55,41 +52,19 @@ async function bootstrap() {
   // Compression
   app.use(compression());
 
-  // CORS - Strict in production
-  const isProd = configService.get('NODE_ENV') === 'production';
-  const allowedOrigins = isProd
-    ? [
-        configService.get('FRONTEND_URL'),
-        configService.get('ADMIN_PANEL_URL'),
-      ].filter(Boolean)
-    : [
-        configService.get('FRONTEND_URL'),
-        configService.get('ADMIN_PANEL_URL'),
-        'http://localhost:3001',
-        'http://localhost:3002',
-        'http://localhost:19006', // Expo dev
-      ].filter(Boolean);
-
-  app.enableCors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, curl, etc.)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+  // CORS via Fastify plugin (not app.enableCors)
+  await app.register(cors, {
+    origin: process.env.CORS_ORIGIN
+      ? process.env.CORS_ORIGIN.split(',').map(s => s.trim())
+      : true,
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
   });
 
-  // Keep validation minimal in prod
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: process.env.NODE_ENV !== 'production'
+  // Leave ValidationPipe off or minimal in prod to avoid memory churn
+  app.useGlobalPipes(new ValidationPipe({ 
+    whitelist: true, 
+    transform: process.env.NODE_ENV !== 'production' 
   }));
 
   // Middleware
@@ -97,9 +72,6 @@ async function bootstrap() {
 
   // Set global API prefix
   app.setGlobalPrefix(apiPrefix);
-
-  // Do NOT initialize Swagger or any dev tooling here for prod
-  // if (process.env.NODE_ENV !== 'production' && process.env.SWAGGER_ENABLE !== 'false') { ... }
 
   // Enable Prisma shutdown hooks
   const prismaService = app.get(PrismaService);

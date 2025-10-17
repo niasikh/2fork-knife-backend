@@ -21,6 +21,8 @@ services:
         value: library
       - key: SWAGGER_ENABLE
         value: "false"
+      - key: CORS_ORIGIN
+        value: "*"
       # Supabase + DB (fill with your real values in dashboard if you don't commit envs)
       # - key: SUPABASE_URL
       #   value: https://xhpxnzpyezqqlyvafdis.supabase.co
