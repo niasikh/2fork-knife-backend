@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { FastifyAdapter } from '@nestjs/platform-fastify';
 import fastifyCors from '@fastify/cors';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -13,7 +13,8 @@ import * as Sentry from '@sentry/node';
 import { ProfilingIntegration } from '@sentry/profiling-node';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
+  // Do NOT pass the generic here; it triggers the INestApplication constraint dance
+  const app = await NestFactory.create(
     AppModule,
     new FastifyAdapter({ logger: false }),
     { bufferLogs: false }
@@ -52,8 +53,8 @@ async function bootstrap() {
   // Compression
   app.use(compression());
 
-  // CORS via Fastify plugin (not app.enableCors)
-  await app.register(fastifyCors, {
+  // Register Fastify CORS plugin. Cast to any to bypass peer-type mismatch from dedupe quirks.
+  await (app as any).register(fastifyCors as any, {
     origin: process.env.CORS_ORIGIN
       ? process.env.CORS_ORIGIN.split(',').map(s => s.trim())
       : true,
