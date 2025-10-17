@@ -60,11 +60,13 @@ jobs:
         run: npm run prisma:generate
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/test
 
       - name: Validate Prisma schema
         run: npx prisma validate
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/test
 
       - name: Run linter
         run: npm run lint
@@ -147,7 +149,7 @@ jobs:
       - name: Validate JSON schemas
         run: |
           for schema in contracts/pos/*.schema.json; do
-            npx ajv compile -s "$schema"
+            npx ajv compile --formats -s "$schema"
           done
           echo "✅ All POS contract schemas are valid"
 
