@@ -146,7 +146,9 @@ jobs:
 
       - name: Validate JSON schemas
         run: |
-          npx ajv compile -s contracts/pos/*.schema.json
+          for schema in contracts/pos/*.schema.json; do
+            npx ajv compile -s "$schema"
+          done
           echo "✅ All POS contract schemas are valid"
 
       - name: Run contract tests
