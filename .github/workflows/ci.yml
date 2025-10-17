@@ -10,6 +10,8 @@ jobs:
   test:
     name: Test & Build
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: "--max-old-space-size=4096"
 
     services:
       postgres:
@@ -133,6 +135,8 @@ jobs:
   contract-validation:
     name: Validate POS Contracts
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: "--max-old-space-size=4096"
 
     steps:
       - name: Checkout code
@@ -149,7 +153,7 @@ jobs:
       - name: Validate JSON schemas
         run: |
           for schema in contracts/pos/*.schema.json; do
-            npx ajv compile --formats -s "$schema"
+            npx ajv compile -s "$schema"
           done
           echo "✅ All POS contract schemas are valid"
 
