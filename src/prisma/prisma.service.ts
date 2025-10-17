@@ -5,18 +5,8 @@ import { PrismaClient } from '@prisma/client';
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   constructor() {
     super({
-      log: process.env.NODE_ENV === 'development' ? ['query','warn','error'] : ['error'],
-      datasources: { db: { url: process.env.DATABASE_URL } },
-
-      // Small, defensive timeouts so the engine doesn't hoard memory
-      // @ts-ignore - __internal is intentionally undocumented
-      __internal: {
-        engine: {
-          // millis
-          connectTimeout: 20000,
-          queryTimeout: 20000
-        }
-      }
+      log: process.env.NODE_ENV === 'development' ? ['warn','error'] : ['error'],
+      datasources: { db: { url: process.env.DATABASE_URL } }
     });
   }
 
@@ -36,7 +26,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   }
 }
 
-// Prevent multiple Prisma clients in dev/hot-reload
-const globalForPrisma = global as unknown as { prisma?: PrismaService };
-export const prisma = globalForPrisma.prisma ?? new PrismaService();
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+// prevent multiple clients in dev/hot reload
+const g = global as unknown as { prisma?: PrismaService };
+export const prisma = g.prisma ?? new PrismaService();
+if (process.env.NODE_ENV !== 'production') g.prisma = prisma;
