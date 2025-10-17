@@ -12,13 +12,15 @@ services:
       - key: NODE_ENV
         value: production
       - key: NODE_OPTIONS
-        value: --max-old-space-size=384
+        value: --max-old-space-size=320
       - key: WEB_CONCURRENCY
         value: "1"
       - key: UV_THREADPOOL_SIZE
         value: "2"
       - key: PRISMA_CLIENT_ENGINE_TYPE
         value: library
+      - key: SWAGGER_ENABLE
+        value: "false"
       # Supabase + DB (fill with your real values in dashboard if you don't commit envs)
       # - key: SUPABASE_URL
       #   value: https://xhpxnzpyezqqlyvafdis.supabase.co

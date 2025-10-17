@@ -12,9 +12,7 @@ import { ProfilingIntegration } from '@sentry/profiling-node';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
-    rawBody: true, // Enable raw body for Stripe webhooks
-    bufferLogs: true,
+    bufferLogs: false,
   });
 
   const configService = app.get(ConfigService);
@@ -80,12 +78,12 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   });
 
-  // Global pipes
+  // Minimal validation in prod to avoid class-transformer overhead
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
-      transform: true,
+      transform: process.env.NODE_ENV !== 'production', // Disable transform in prod
       transformOptions: {
         enableImplicitConversion: true,
       },
@@ -97,6 +95,14 @@ async function bootstrap() {
 
   // Set global API prefix
   app.setGlobalPrefix(apiPrefix);
+
+  // Only enable Swagger/dev stuff in non-prod
+  if (process.env.NODE_ENV !== 'production' && process.env.SWAGGER_ENABLE !== 'false') {
+    // Swagger setup would go here if needed
+    // const config = new DocumentBuilder().setTitle('API').setVersion('1.0').build();
+    // const document = SwaggerModule.createDocument(app, config);
+    // SwaggerModule.setup('docs', app, document);
+  }
 
   // Enable Prisma shutdown hooks
   const prismaService = app.get(PrismaService);
