@@ -2,17 +2,16 @@ services:
   - type: web
     name: fork-knife-backend
     env: node
-            plan: pro  # 2GB plan for better performance
+    plan: pro  # 2GB plan for better performance
     buildCommand: |
-      npm install --no-audit --no-fund
-      npm run build
+      npm install --no-audit --no-fund && npm run build
     startCommand: npm run start:prod
     postDeployCommand: npm run migrate:deploy
     envVars:
       - key: NODE_ENV
         value: production
-              - key: NODE_OPTIONS
-                value: --max-old-space-size=1536 --max-semi-space-size=32
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=768 --max-semi-space-size=16
       - key: WEB_CONCURRENCY
         value: "1"
       - key: UV_THREADPOOL_SIZE
@@ -23,14 +22,3 @@ services:
         value: "false"
       - key: CORS_ORIGIN
         value: "*"
-      # Supabase + DB (fill with your real values in dashboard if you don't commit envs)
-      # - key: SUPABASE_URL
-      #   value: https://xhpxnzpyezqqlyvafdis.supabase.co
-      # - key: SUPABASE_ANON_KEY
-      #   value: <ROTATED>
-      # - key: SUPABASE_SERVICE_KEY
-      #   value: <ROTATED>
-      # - key: DATABASE_URL
-      #   value: postgresql://postgres.xhpxnzpyezqqlyvafdis:dwIR3r0PqNpcs8a4@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require&connection_limit=1
-      # - key: DIRECT_URL
-      #   value: postgresql://postgres:dwIR3r0PqNpcs8a4@db.xhpxnzpyezqqlyvafdis.supabase.co:5432/postgres?sslmode=require
