@@ -127,9 +127,9 @@ async function bootstrap() {
   if (process.env.NODE_ENV === 'production') {
     setInterval(() => {
       const used = process.memoryUsage().rss / (1024 * 1024);
-      if (used > 480) {
+      if (used > 900) {
         // eslint-disable-next-line no-console
-        console.error(`[mem] RSS ${used.toFixed(0)} MB > 480 MB — exiting to restart cleanly`);
+        console.error(`[mem] RSS ${used.toFixed(0)} MB > 900 MB — exiting to restart cleanly`);
         process.exit(1);
       }
     }, 15000).unref();

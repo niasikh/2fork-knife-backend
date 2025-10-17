@@ -2,7 +2,7 @@ services:
   - type: web
     name: fork-knife-backend
     env: node
-    plan: starter   # use at least 512MB; if OOM at runtime, bump to 1GB
+    plan: standard  # 1GB plan for better performance
     buildCommand: |
       npm ci --no-audit --no-fund
       npm run build
@@ -12,7 +12,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: NODE_OPTIONS
-        value: --max-old-space-size=300 --max-semi-space-size=8
+        value: --max-old-space-size=768 --max-semi-space-size=16
       - key: WEB_CONCURRENCY
         value: "1"
       - key: UV_THREADPOOL_SIZE
