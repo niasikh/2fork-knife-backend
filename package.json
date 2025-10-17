@@ -14,9 +14,9 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "cross-env NODE_ENV=production NODE_OPTIONS=\"--max-old-space-size=768 --max-semi-space-size=16\" node dist/main",
     "start:worker": "cross-env NODE_ENV=production NODE_OPTIONS=--max-old-space-size=256 node dist/worker/main",
-    "generate": "prisma generate",
+    "generate": "npx prisma generate",
     "build": "npm run generate && nest build",
-    "migrate:deploy": "prisma migrate deploy",
+    "migrate:deploy": "npx prisma migrate deploy",
     "lint": "eslint \"{src,apps,libs,test}/**/*.{ts}\" --fix",
     "format": "prettier --write \"src/**/*.{ts}\" \"test/**/*.{ts}\"",
     "test": "npx jest",
@@ -91,8 +91,7 @@
     "typescript": "^5.3.3"
   },
   "overrides": {
-    "fastify": "4.26.2",
-    "@fastify/cors": "8.4.2"
+    "fastify": "4.26.2"
   },
   "devDependencies": {
     "@nestjs/schematics": "^10.1.0",
