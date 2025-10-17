@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AppModule } from './app.module';
 import { PrismaService } from './prisma/prisma.service';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
@@ -11,9 +12,15 @@ import * as Sentry from '@sentry/node';
 import { ProfilingIntegration } from '@sentry/profiling-node';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    bufferLogs: false,
-  });
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter({
+      logger: false // no per-request logs in prod
+    }),
+    {
+      bufferLogs: false
+    }
+  );
 
   const configService = app.get(ConfigService);
 
@@ -44,7 +51,7 @@ async function bootstrap() {
   app.use(helmet({
     contentSecurityPolicy: configService.get('NODE_ENV') === 'production',
   }));
-  
+
   // Compression
   app.use(compression());
 
@@ -78,17 +85,12 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   });
 
-  // Minimal validation in prod to avoid class-transformer overhead
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: process.env.NODE_ENV !== 'production', // Disable transform in prod
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-    }),
-  );
+  // Keep validation minimal in prod
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: process.env.NODE_ENV !== 'production'
+  }));
 
   // Middleware
   app.use(cookieParser());
@@ -96,13 +98,8 @@ async function bootstrap() {
   // Set global API prefix
   app.setGlobalPrefix(apiPrefix);
 
-  // Only enable Swagger/dev stuff in non-prod
-  if (process.env.NODE_ENV !== 'production' && process.env.SWAGGER_ENABLE !== 'false') {
-    // Swagger setup would go here if needed
-    // const config = new DocumentBuilder().setTitle('API').setVersion('1.0').build();
-    // const document = SwaggerModule.createDocument(app, config);
-    // SwaggerModule.setup('docs', app, document);
-  }
+  // Do NOT initialize Swagger or any dev tooling here for prod
+  // if (process.env.NODE_ENV !== 'production' && process.env.SWAGGER_ENABLE !== 'false') { ... }
 
   // Enable Prisma shutdown hooks
   const prismaService = app.get(PrismaService);
@@ -110,7 +107,7 @@ async function bootstrap() {
 
   // Start server
   const port = configService.get('PORT') || 3000;
-  await app.listen(port);
+  await app.listen({ port: Number(port), host: '0.0.0.0' });
 
   console.log(`
 ╔════════════════════════════════════════════════════════════════╗
@@ -126,6 +123,18 @@ async function bootstrap() {
 ╚════════════════════════════════════════════════════════════════╝
   `);
 
+  // Safety net: crash early if you exceed budget
+  if (process.env.NODE_ENV === 'production') {
+    setInterval(() => {
+      const used = process.memoryUsage().rss / (1024 * 1024);
+      if (used > 480) {
+        // eslint-disable-next-line no-console
+        console.error(`[mem] RSS ${used.toFixed(0)} MB > 480 MB — exiting to restart cleanly`);
+        process.exit(1);
+      }
+    }, 15000).unref();
+  }
+
   // Graceful shutdown on SIGTERM
   process.on('SIGTERM', async () => {
     console.log('⚠️  SIGTERM received, shutting down gracefully...');
@@ -139,4 +148,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-
