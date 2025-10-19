@@ -59,7 +59,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
                   },
                 }
               : undefined, // JSON stdout in production
-            customProps: (req: { requestId?: string; user?: { id: string } }) => ({
+            customProps: (req: any) => ({
               requestId: req.requestId,
               userId: req.user?.id,
             }),
@@ -114,7 +114,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
                 sortSchema: true,
                 playground: !isProd, // Disabled in production
                 introspection: !isProd, // Disabled in production
-                context: ({ req, res }: { req: any; res: any }) => ({ req, res }),
+                context: ({ req, res }: { req: unknown; res: unknown }) => ({ req, res }),
                 formatError: (error) => {
                   if (isProd) {
                     // Don't leak error details in production

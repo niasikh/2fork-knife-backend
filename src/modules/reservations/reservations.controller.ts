@@ -29,9 +29,9 @@ export class ReservationsController {
   ) {
     // If user is customer, only show their reservations
     // If user is restaurant staff, show restaurant reservations
-    const filters: any = {};
+    const filters: Record<string, unknown> = {};
 
-    if (user.role === UserRole.CUSTOMER) {
+    if ((user as any).role === UserRole.CUSTOMER) {
       filters.userId = user.id;
     } else if (restaurantId) {
       filters.restaurantId = restaurantId;
@@ -51,7 +51,7 @@ export class ReservationsController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async findOne(@Param('id') id: string, @CurrentUser() user: any) {
+  async findOne(@Param('id') id: string, @CurrentUser() user: { id: string }) {
     return this.reservationsService.findOne(id, user.id);
   }
 
@@ -89,7 +89,7 @@ export class ReservationsController {
     UserRole.ADMIN,
   )
   @Post(':id/seat')
-  async seat(@Param('id') id: string, @CurrentUser() user: any) {
+  async seat(@Param('id') id: string, @CurrentUser() user: { id: string }) {
     return this.reservationsService.seat(id, user.id);
   }
 
@@ -101,7 +101,7 @@ export class ReservationsController {
     UserRole.ADMIN,
   )
   @Post(':id/complete')
-  async complete(@Param('id') id: string, @CurrentUser() user: any) {
+  async complete(@Param('id') id: string, @CurrentUser() user: { id: string }) {
     return this.reservationsService.complete(id, user.id);
   }
 
@@ -113,7 +113,7 @@ export class ReservationsController {
     UserRole.ADMIN,
   )
   @Post(':id/no-show')
-  async markNoShow(@Param('id') id: string, @CurrentUser() user: any) {
+  async markNoShow(@Param('id') id: string, @CurrentUser() user: { id: string }) {
     return this.reservationsService.markNoShow(id, user.id);
   }
 }

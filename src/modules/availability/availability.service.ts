@@ -141,18 +141,24 @@ export class AvailabilityService {
 
   private async isDateTimeBlocked(blocks: unknown[], date: Date, time: string): Promise<boolean> {
     for (const block of blocks) {
-      const blockStart = new Date(block.startDate);
-      const blockEnd = new Date(block.endDate);
+      const blockData = block as {
+        startDate: string;
+        endDate: string;
+        startTime?: string;
+        endTime?: string;
+      };
+      const blockStart = new Date(blockData.startDate);
+      const blockEnd = new Date(blockData.endDate);
 
       // Check if date is within block range
       if (date >= blockStart && date <= blockEnd) {
         // If no specific time range, entire day is blocked
-        if (!block.startTime || !block.endTime) {
+        if (!blockData.startTime || !blockData.endTime) {
           return true;
         }
 
         // Check if time is within block time range
-        if (this.isTimeWithinRange(time, block.startTime, block.endTime)) {
+        if (this.isTimeWithinRange(time, blockData.startTime, blockData.endTime)) {
           return true;
         }
       }

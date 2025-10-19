@@ -100,7 +100,7 @@ export class ReservationsService {
     });
 
     // Create audit log
-    await this.createAuditLog(reservation.id, 'CREATED', userId, null);
+    await this.createAuditLog(reservation.id, 'CREATED', userId, {});
 
     this.logger.log(`Reservation created: ${reservation.id} for ${dto.guestName}`);
 
@@ -390,7 +390,7 @@ export class ReservationsService {
       },
     });
 
-    await this.createAuditLog(id, 'SEATED', userId, null);
+    await this.createAuditLog(id, 'SEATED', userId, {});
 
     this.logger.log(`Reservation seated: ${id}`);
 
@@ -420,7 +420,7 @@ export class ReservationsService {
       await this.updateGuestStats(reservation.guestProfileId);
     }
 
-    await this.createAuditLog(id, 'COMPLETED', userId, null);
+    await this.createAuditLog(id, 'COMPLETED', userId, {});
 
     this.logger.log(`Reservation completed: ${id}`);
 
@@ -453,7 +453,7 @@ export class ReservationsService {
       });
     }
 
-    await this.createAuditLog(id, 'NO_SHOW', userId, null);
+    await this.createAuditLog(id, 'NO_SHOW', userId, {});
 
     this.logger.log(`Reservation marked as no-show: ${id}`);
 
@@ -521,7 +521,7 @@ export class ReservationsService {
         action,
         performedBy: userId,
         performedByName: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
-        changes,
+        changes: changes as any,
       },
     });
   }

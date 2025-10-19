@@ -14,6 +14,6 @@ export class ParseDatePipe implements PipeTransform {
       throw new BadRequestException('Invalid date format. Expected ISO 8601 format');
     }
 
-    return date;
+    return date as Date;
   }
 }

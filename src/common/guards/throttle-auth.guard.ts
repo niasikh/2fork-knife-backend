@@ -9,6 +9,6 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 export class ThrottleAuthGuard extends ThrottlerGuard {
   protected async getTracker(req: Record<string, unknown>): Promise<string> {
     // Rate limit by IP address
-    return req.ip || req.connection.remoteAddress || 'unknown';
+    return (req.ip as string) || ((req.connection as any)?.remoteAddress as string) || 'unknown';
   }
 }
