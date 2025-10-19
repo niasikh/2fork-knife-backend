@@ -11,7 +11,7 @@ export class ReservationJobsProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job): Promise<any> {
+  async process(job: Job): Promise<unknown> {
     this.logger.log(`Processing reservation job ${job.id}: ${job.name}`);
 
     try {

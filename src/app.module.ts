@@ -59,7 +59,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
                   },
                 }
               : undefined, // JSON stdout in production
-            customProps: (req: any) => ({
+            customProps: (req: { requestId?: string; user?: { id: string } }) => ({
               requestId: req.requestId,
               userId: req.user?.id,
             }),

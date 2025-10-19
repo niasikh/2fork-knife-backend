@@ -6,7 +6,7 @@ import { Job } from 'bullmq';
 export class NotificationProcessor extends WorkerHost {
   private readonly logger = new Logger(NotificationProcessor.name);
 
-  async process(job: Job): Promise<any> {
+  async process(job: Job): Promise<unknown> {
     this.logger.log(`Processing notification job ${job.id}: ${job.name}`);
 
     try {
@@ -26,19 +26,19 @@ export class NotificationProcessor extends WorkerHost {
     }
   }
 
-  private async sendConfirmation(data: any) {
+  private async sendConfirmation(data: Record<string, unknown>) {
     // TODO: Implement email/SMS sending
     this.logger.log(`Sending confirmation to ${data.email}`);
     // await this.notificationService.sendEmail(...)
     return { sent: true, timestamp: new Date() };
   }
 
-  private async sendReminder(data: any) {
+  private async sendReminder(data: Record<string, unknown>) {
     this.logger.log(`Sending reminder to ${data.email}`);
     return { sent: true, timestamp: new Date() };
   }
 
-  private async sendCancellation(data: any) {
+  private async sendCancellation(data: Record<string, unknown>) {
     this.logger.log(`Sending cancellation to ${data.email}`);
     return { sent: true, timestamp: new Date() };
   }

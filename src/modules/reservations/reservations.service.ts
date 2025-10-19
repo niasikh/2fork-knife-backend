@@ -119,7 +119,7 @@ export class ReservationsService {
     startDate?: Date;
     endDate?: Date;
   }) {
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (filters?.userId) {
       where.userId = filters.userId;
@@ -505,7 +505,7 @@ export class ReservationsService {
     reservationId: string,
     action: string,
     userId: string,
-    changes: any,
+    changes: Record<string, unknown>,
   ) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },

@@ -24,7 +24,9 @@ async function bootstrap() {
 
     // Pause workers to stop accepting new jobs
     if (workers && Array.isArray(workers)) {
-      await Promise.all(workers.map((worker: any) => worker.pause(true)));
+      await Promise.all(
+        workers.map((worker: { pause: (wait: boolean) => Promise<void> }) => worker.pause(true)),
+      );
       logger.log('Workers paused, waiting for current jobs to complete...');
     }
 

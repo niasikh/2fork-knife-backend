@@ -61,7 +61,7 @@ export class RestaurantsService {
     isActive?: boolean;
     search?: string;
   }) {
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (filters?.city) {
       where.city = filters.city;
@@ -383,7 +383,7 @@ export class RestaurantsService {
   }
 
   async getShifts(restaurantId: string, dayOfWeek?: number) {
-    const where: any = { restaurantId };
+    const where: Record<string, unknown> = { restaurantId };
 
     if (dayOfWeek !== undefined) {
       where.dayOfWeek = dayOfWeek;
@@ -494,7 +494,7 @@ export class RestaurantsService {
   }
 
   async getBlocks(restaurantId: string, startDate?: Date, endDate?: Date) {
-    const where: any = { restaurantId };
+    const where: Record<string, unknown> = { restaurantId };
 
     if (startDate && endDate) {
       where.AND = [{ startDate: { lte: endDate } }, { endDate: { gte: startDate } }];

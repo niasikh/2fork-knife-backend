@@ -14,14 +14,14 @@ export class ReservationsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() dto: CreateReservationDto, @CurrentUser() user: any) {
+  async create(@Body() dto: CreateReservationDto, @CurrentUser() user: { id: string }) {
     return this.reservationsService.create(dto, user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(
-    @CurrentUser() user: any,
+    @CurrentUser() user: { id: string },
     @Query('restaurantId') restaurantId?: string,
     @Query('status') status?: ReservationStatus,
     @Query('startDate') startDate?: string,
@@ -66,7 +66,7 @@ export class ReservationsController {
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateReservationDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: { id: string },
   ) {
     return this.reservationsService.update(id, dto, user.id);
   }
@@ -76,7 +76,7 @@ export class ReservationsController {
   async cancel(
     @Param('id') id: string,
     @Body() dto: CancelReservationDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: { id: string },
   ) {
     return this.reservationsService.cancel(id, dto, user.id);
   }

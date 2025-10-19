@@ -10,6 +10,6 @@ export async function getCanonicalReservationValidator() {
   }
   // dynamic import keeps startup light
   const schema = await import('../../contracts/pos/canonical-reservation.schema.json');
-  const s = (schema as any).default ?? schema;
+  const s = (schema as { default?: unknown }).default ?? schema;
   return ajv.compile(s);
 }

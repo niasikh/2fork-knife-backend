@@ -6,7 +6,7 @@ import { Job } from 'bullmq';
 export class PaymentProcessor extends WorkerHost {
   private readonly logger = new Logger(PaymentProcessor.name);
 
-  async process(job: Job): Promise<any> {
+  async process(job: Job): Promise<unknown> {
     this.logger.log(`Processing payment job ${job.id}: ${job.name}`);
 
     try {
@@ -26,18 +26,18 @@ export class PaymentProcessor extends WorkerHost {
     }
   }
 
-  private async processRefund(data: any) {
+  private async processRefund(data: Record<string, unknown>) {
     this.logger.log(`Processing refund for reservation ${data.reservationId}`);
     // TODO: Implement Stripe refund
     return { refunded: true, amount: data.amount };
   }
 
-  private async captureHold(data: any) {
+  private async captureHold(data: Record<string, unknown>) {
     this.logger.log(`Capturing payment hold ${data.paymentIntentId}`);
     return { captured: true };
   }
 
-  private async chargeNoShowFee(data: any) {
+  private async chargeNoShowFee(data: Record<string, unknown>) {
     this.logger.log(`Charging no-show fee for reservation ${data.reservationId}`);
     return { charged: true, amount: data.feeAmount };
   }

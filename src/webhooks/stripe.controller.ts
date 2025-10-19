@@ -68,7 +68,7 @@ export class StripeWebhookController {
         eventId: event.id,
         provider: 'stripe',
         eventType: event.type,
-        payload: event as any,
+        payload: event as Record<string, unknown>,
         processed: false,
       },
     });

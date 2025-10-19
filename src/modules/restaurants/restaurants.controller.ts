@@ -66,7 +66,7 @@ export class RestaurantsController {
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateRestaurantDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: { id: string },
   ) {
     return this.restaurantsService.update(id, dto, user.id);
   }
@@ -94,7 +94,7 @@ export class RestaurantsController {
   async createArea(
     @Param('restaurantId') restaurantId: string,
     @Body() dto: CreateAreaDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: { id: string },
   ) {
     return this.restaurantsService.createArea(restaurantId, dto, user.id);
   }
@@ -105,7 +105,7 @@ export class RestaurantsController {
   async updateArea(
     @Param('areaId') areaId: string,
     @Body() dto: Partial<CreateAreaDto>,
-    @CurrentUser() user: any,
+    @CurrentUser() user: { id: string },
   ) {
     return this.restaurantsService.updateArea(areaId, dto, user.id);
   }
@@ -133,7 +133,7 @@ export class RestaurantsController {
   async createTable(
     @Param('restaurantId') restaurantId: string,
     @Body() dto: CreateTableDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: { id: string },
   ) {
     return this.restaurantsService.createTable(restaurantId, dto, user.id);
   }
@@ -144,7 +144,7 @@ export class RestaurantsController {
   async updateTable(
     @Param('tableId') tableId: string,
     @Body() dto: Partial<CreateTableDto>,
-    @CurrentUser() user: any,
+    @CurrentUser() user: { id: string },
   ) {
     return this.restaurantsService.updateTable(tableId, dto, user.id);
   }
@@ -178,7 +178,7 @@ export class RestaurantsController {
   async createShift(
     @Param('restaurantId') restaurantId: string,
     @Body() dto: CreateShiftDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: { id: string },
   ) {
     return this.restaurantsService.createShift(restaurantId, dto, user.id);
   }
@@ -189,7 +189,7 @@ export class RestaurantsController {
   async updateShift(
     @Param('shiftId') shiftId: string,
     @Body() dto: Partial<CreateShiftDto>,
-    @CurrentUser() user: any,
+    @CurrentUser() user: { id: string },
   ) {
     return this.restaurantsService.updateShift(shiftId, dto, user.id);
   }
@@ -217,7 +217,7 @@ export class RestaurantsController {
   async updatePolicy(
     @Param('restaurantId') restaurantId: string,
     @Body() dto: UpdatePolicyDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: { id: string },
   ) {
     return this.restaurantsService.updatePolicy(restaurantId, dto, user.id);
   }
@@ -246,7 +246,7 @@ export class RestaurantsController {
   async createBlock(
     @Param('restaurantId') restaurantId: string,
     @Body() dto: CreateBlockDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: { id: string },
   ) {
     return this.restaurantsService.createBlock(restaurantId, dto, user.id);
   }
