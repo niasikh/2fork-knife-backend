@@ -7,7 +7,8 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { BullModule } from '@nestjs/bullmq';
 import { LoggerModule } from 'nestjs-pino';
 import { join } from 'path';
-import depthLimit from 'graphql-depth-limit';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const depthLimit = require('graphql-depth-limit');
 import { GraphqlModule } from './graphql/graphql.module';
 
 // Core modules
