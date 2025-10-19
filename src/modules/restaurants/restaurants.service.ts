@@ -20,7 +20,7 @@ export class RestaurantsService {
   // RESTAURANT CRUD
   // ============================================
 
-  async create(dto: CreateRestaurantDto, ownerId: string) {
+  async create(dto: CreateRestaurantDto, _ownerId: string) {
     // Check if slug is unique
     const existing = await this.prisma.restaurant.findUnique({
       where: { slug: dto.slug },

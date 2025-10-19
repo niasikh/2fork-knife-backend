@@ -188,7 +188,7 @@ export class AuthService {
       return null;
     }
 
-    const { passwordHash, refreshToken, ...result } = user;
+    const { passwordHash: _passwordHash, refreshToken: _refreshToken, ...result } = user;
     return result;
   }
 

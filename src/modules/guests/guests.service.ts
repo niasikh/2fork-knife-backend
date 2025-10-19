@@ -5,7 +5,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class GuestsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(restaurantId?: string) {
+  async findAll(_restaurantId?: string) {
     return this.prisma.guest.findMany({
       include: {
         notes: true,

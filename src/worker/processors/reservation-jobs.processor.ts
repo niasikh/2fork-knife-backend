@@ -96,7 +96,7 @@ export class ReservationJobsProcessor extends WorkerHost {
     return { processed: true };
   }
 
-  private async checkLateArrival(data: { reservationId: string }) {
+  private async checkLateArrival(_data: { reservationId: string }) {
     // Check if guest is late
     return { checked: true };
   }

@@ -7,6 +7,8 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { BullModule } from '@nestjs/bullmq';
 import { LoggerModule } from 'nestjs-pino';
 import { join } from 'path';
+import depthLimit from 'graphql-depth-limit';
+import { GraphqlModule } from './graphql/graphql.module';
 
 // Core modules
 import { PrismaModule } from './prisma/prisma.module';
@@ -126,7 +128,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
                 validationRules: isProd
                   ? [
                       // Limit query depth to prevent deep nested attacks
-                      require('graphql-depth-limit')(8),
+                      depthLimit(8),
                     ]
                   : [],
               };
@@ -141,7 +143,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
 
     // GraphQL BFF (conditional)
     ...(process.env.ENABLE_GRAPHQL === 'true' 
-      ? [require('./graphql/graphql.module').GraphqlModule]
+      ? [GraphqlModule]
       : []),
 
     // Features

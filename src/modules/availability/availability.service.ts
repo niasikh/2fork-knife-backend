@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { parse, format, addMinutes, isWithinInterval } from 'date-fns';
-import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
+import { format } from 'date-fns';
+import { zonedTimeToUtc } from 'date-fns-tz';
 
 @Injectable()
 export class AvailabilityService {
@@ -214,7 +214,7 @@ export class AvailabilityService {
   private async getCoversForShift(
     restaurantId: string,
     date: Date,
-    shiftId: string,
+    _shiftId: string,
   ): Promise<number> {
     const reservations = await this.prisma.reservation.findMany({
       where: {
@@ -237,7 +237,7 @@ export class AvailabilityService {
     date: Date,
     time: string,
     partySize: number,
-    shift: any,
+    _shift: any,
   ) {
     // Get all tables that can accommodate party size
     const tables = await this.prisma.table.findMany({

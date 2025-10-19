@@ -22,7 +22,7 @@ export class PaymentsService {
   }
 
   // TODO: Implement Stripe payment methods
-  async createPaymentIntent(reservationId: string, amount: number) {
+  async createPaymentIntent(reservationId: string, _amount: number) {
     this.logger.log(`Creating payment intent for reservation ${reservationId}`);
     // Implementation will come later
     return { message: 'Payment module - implementation pending' };

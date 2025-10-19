@@ -349,7 +349,7 @@ export class ReservationsService {
     }
 
     // Check cancellation policy
-    const restaurant = await this.prisma.restaurant.findUnique({
+    const _restaurant = await this.prisma.restaurant.findUnique({
       where: { id: reservation.restaurantId },
       include: { policy: true },
     });

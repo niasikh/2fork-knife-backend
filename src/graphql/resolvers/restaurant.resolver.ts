@@ -1,9 +1,6 @@
-import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { Resolver, Query, Args } from '@nestjs/graphql';
 import { RestaurantsService } from '../../modules/restaurants/restaurants.service';
 import { RestaurantType } from '../types/restaurant.type';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 @Resolver(() => RestaurantType)
 export class RestaurantResolver {
