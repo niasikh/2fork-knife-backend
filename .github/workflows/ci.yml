@@ -152,10 +152,23 @@ jobs:
 
       - name: Validate JSON schemas
         run: |
-          for schema in contracts/pos/*.schema.json; do
-            npx ajv compile -s "$schema"
-          done
-          echo "✅ All POS contract schemas are valid"
+          node -e "
+          const Ajv = require('ajv');
+          const addFormats = require('ajv-formats');
+          const fs = require('fs');
+          const path = require('path');
+          
+          const ajv = new Ajv();
+          addFormats(ajv);
+          
+          const schemaFiles = fs.readdirSync('contracts/pos/').filter(f => f.endsWith('.schema.json'));
+          for (const file of schemaFiles) {
+            const schema = JSON.parse(fs.readFileSync(path.join('contracts/pos', file), 'utf8'));
+            const validate = ajv.compile(schema);
+            console.log(\`✅ \${file} is valid\`);
+          }
+          console.log('✅ All POS contract schemas are valid');
+          "
 
       - name: Run contract tests
         run: npm test -- test/contracts

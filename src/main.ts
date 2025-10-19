@@ -14,7 +14,7 @@ async function bootstrap() {
   // Get underlying Fastify instance and register plugins there
   const fastify = app.getHttpAdapter().getInstance();
 
-  await fastify.register(fastifyCors, {
+  await fastify.register(fastifyCors as any, {
     origin: process.env.CORS_ORIGIN
       ? process.env.CORS_ORIGIN.split(',').map(s => s.trim())
       : true,
@@ -23,13 +23,13 @@ async function bootstrap() {
   });
 
   // Raw body only for the Stripe route
-  await fastify.register(fastifyRawBody, {
+  await fastify.register(fastifyRawBody as any, {
     field: 'rawBody',
     global: false,
     routes: ['/webhooks/stripe']
   });
 
-  await app.listen({ port: Number(process.env.PORT) || 3000, host: '0.0.0.0' });
+  await app.listen(Number(process.env.PORT) || 3000, '0.0.0.0');
 
   // Optional guard to avoid death-by-leak while you harden things
   if (process.env.NODE_ENV === 'production') {
