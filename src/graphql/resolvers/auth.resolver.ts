@@ -27,13 +27,13 @@ export class AuthResolver {
 
   @Query(() => UserType, { name: 'me' })
   @UseGuards(JwtAuthGuard)
-  async me(@CurrentUser() user: any) {
+  async me(@CurrentUser() user: { id: string }) {
     return this.authService.getMe(user.id);
   }
 
   @Mutation(() => Boolean, { name: 'logout' })
   @UseGuards(JwtAuthGuard)
-  async logout(@CurrentUser() user: any) {
+  async logout(@CurrentUser() user: { id: string }) {
     await this.authService.logout(user.id);
     return true;
   }

@@ -139,7 +139,7 @@ export class AvailabilityService {
   // PRIVATE HELPER METHODS
   // ============================================
 
-  private async isDateTimeBlocked(blocks: any[], date: Date, time: string): Promise<boolean> {
+  private async isDateTimeBlocked(blocks: unknown[], date: Date, time: string): Promise<boolean> {
     for (const block of blocks) {
       const blockStart = new Date(block.startDate);
       const blockEnd = new Date(block.endDate);
@@ -232,7 +232,7 @@ export class AvailabilityService {
     date: Date,
     time: string,
     partySize: number,
-    _shift: any,
+    _shift: unknown,
   ) {
     // Get all tables that can accommodate party size
     const tables = await this.prisma.table.findMany({

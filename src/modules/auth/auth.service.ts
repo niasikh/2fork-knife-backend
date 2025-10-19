@@ -157,7 +157,7 @@ export class AuthService {
     return { message: 'Logged out successfully' };
   }
 
-  async validateUser(identifier: string, password: string): Promise<any> {
+  async validateUser(identifier: string, password: string): Promise<unknown> {
     const user = await this.prisma.user.findFirst({
       where: {
         OR: [{ email: identifier }, { phone: identifier }],

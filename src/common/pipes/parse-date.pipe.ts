@@ -3,7 +3,7 @@ import { parseISO, isValid } from 'date-fns';
 
 @Injectable()
 export class ParseDatePipe implements PipeTransform {
-  transform(value: any): Date {
+  transform(value: unknown): Date {
     if (!value) {
       throw new BadRequestException('Date is required');
     }

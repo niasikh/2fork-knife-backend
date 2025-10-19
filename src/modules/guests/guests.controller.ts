@@ -22,7 +22,7 @@ export class GuestsController {
   async addNote(
     @Param('id') id: string,
     @Body() body: { content: string; isInternal?: boolean },
-    @CurrentUser() user: any,
+    @CurrentUser() user: { id: string },
   ) {
     return this.guestsService.addNote(id, body.content, user.id, body.isInternal);
   }

@@ -36,13 +36,13 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@CurrentUser() user: any) {
+  async logout(@CurrentUser() user: { id: string }) {
     return this.authService.logout(user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  async getMe(@CurrentUser() user: any) {
+  async getMe(@CurrentUser() user: { id: string }) {
     return this.authService.getMe(user.id);
   }
 }

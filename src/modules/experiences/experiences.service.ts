@@ -6,7 +6,7 @@ export class ExperiencesService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(restaurantId?: string) {
-    const where: any = { isActive: true };
+    const where: Record<string, unknown> = { isActive: true };
     if (restaurantId) {
       where.restaurantId = restaurantId;
     }
