@@ -33,4 +33,3 @@ import { ReservationJobsProcessor } from './processors/reservation-jobs.processo
   providers: [NotificationProcessor, PaymentProcessor, ReservationJobsProcessor],
 })
 export class WorkerModule {}
-

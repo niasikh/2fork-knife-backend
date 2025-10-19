@@ -8,4 +8,3 @@ import { GuestsController } from './guests.controller';
   exports: [GuestsService],
 })
 export class GuestsModule {}
-

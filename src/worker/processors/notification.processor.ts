@@ -43,4 +43,3 @@ export class NotificationProcessor extends WorkerHost {
     return { sent: true, timestamp: new Date() };
   }
 }
-

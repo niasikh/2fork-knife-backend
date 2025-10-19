@@ -17,4 +17,3 @@ export class RegisterInput {
   @Field()
   lastName: string;
 }
-

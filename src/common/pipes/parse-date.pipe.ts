@@ -17,4 +17,3 @@ export class ParseDatePipe implements PipeTransform {
     return date;
   }
 }
-

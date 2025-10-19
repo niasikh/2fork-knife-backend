@@ -33,4 +33,3 @@ export class AvailabilityController {
     return this.availabilityService.getAvailableSlots(restaurantId, date, parseInt(partySize));
   }
 }
-

@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  ConflictException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -25,10 +20,7 @@ export class AuthService {
     // Check if user exists
     const existingUser = await this.prisma.user.findFirst({
       where: {
-        OR: [
-          { email: dto.email },
-          ...(dto.phone ? [{ phone: dto.phone }] : []),
-        ],
+        OR: [{ email: dto.email }, ...(dto.phone ? [{ phone: dto.phone }] : [])],
       },
     });
 
@@ -78,10 +70,7 @@ export class AuthService {
     // Find user
     const user = await this.prisma.user.findFirst({
       where: {
-        OR: [
-          { email: dto.identifier },
-          { phone: dto.identifier },
-        ],
+        OR: [{ email: dto.identifier }, { phone: dto.identifier }],
       },
     });
 
@@ -171,10 +160,7 @@ export class AuthService {
   async validateUser(identifier: string, password: string): Promise<any> {
     const user = await this.prisma.user.findFirst({
       where: {
-        OR: [
-          { email: identifier },
-          { phone: identifier },
-        ],
+        OR: [{ email: identifier }, { phone: identifier }],
       },
     });
 
@@ -188,7 +174,8 @@ export class AuthService {
       return null;
     }
 
-    const { passwordHash: _passwordHash, refreshToken: _refreshToken, ...result } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash, refreshToken, ...result } = user;
     return result;
   }
 
@@ -264,4 +251,3 @@ export class AuthService {
     });
   }
 }
-

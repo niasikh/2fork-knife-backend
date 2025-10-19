@@ -11,11 +11,7 @@ export class MenuService {
         restaurantId,
         isAvailable: true,
       },
-      orderBy: [
-        { category: 'asc' },
-        { sortOrder: 'asc' },
-      ],
+      orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }],
     });
   }
 }
-

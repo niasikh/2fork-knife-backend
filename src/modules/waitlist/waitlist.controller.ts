@@ -16,4 +16,3 @@ export class WaitlistController {
     return this.waitlistService.findAll(restaurantId, date);
   }
 }
-

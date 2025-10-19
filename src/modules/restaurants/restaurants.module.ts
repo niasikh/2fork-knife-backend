@@ -8,4 +8,3 @@ import { RestaurantsController } from './restaurants.controller';
   exports: [RestaurantsService],
 })
 export class RestaurantsModule {}
-

@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: false }),
-    { bufferLogs: false }
+    { bufferLogs: false },
   );
 
   // Get underlying Fastify instance and register plugins there
@@ -16,17 +16,17 @@ async function bootstrap() {
 
   await fastify.register(fastifyCors as any, {
     origin: process.env.CORS_ORIGIN
-      ? process.env.CORS_ORIGIN.split(',').map(s => s.trim())
+      ? process.env.CORS_ORIGIN.split(',').map((s) => s.trim())
       : true,
     credentials: true,
-    methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS']
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   });
 
   // Raw body only for the Stripe route
   await fastify.register(fastifyRawBody as any, {
     field: 'rawBody',
     global: false,
-    routes: ['/webhooks/stripe']
+    routes: ['/webhooks/stripe'],
   });
 
   await app.listen(Number(process.env.PORT) || 3000, '0.0.0.0');

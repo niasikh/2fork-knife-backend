@@ -27,11 +27,6 @@ export class AvailabilityResolver {
     @Args('date') date: string,
     @Args('partySize') partySize: number,
   ) {
-    return this.availabilityService.getAvailableSlots(
-      restaurantId,
-      new Date(date),
-      partySize,
-    );
+    return this.availabilityService.getAvailableSlots(restaurantId, new Date(date), partySize);
   }
 }
-

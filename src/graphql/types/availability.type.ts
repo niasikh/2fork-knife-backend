@@ -20,4 +20,3 @@ export class TimeSlotType {
   @Field({ nullable: true })
   shift?: string;
 }
-

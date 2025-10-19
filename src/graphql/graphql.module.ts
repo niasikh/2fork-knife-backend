@@ -12,12 +12,6 @@ import { AvailabilityResolver } from './resolvers/availability.resolver';
 
 @Module({
   imports: [RestaurantsModule, ReservationsModule, AuthModule, AvailabilityModule],
-  providers: [
-    RestaurantResolver,
-    ReservationResolver,
-    AuthResolver,
-    AvailabilityResolver,
-  ],
+  providers: [RestaurantResolver, ReservationResolver, AuthResolver, AvailabilityResolver],
 })
 export class GraphqlModule {}
-

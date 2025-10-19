@@ -10,4 +10,3 @@ import { AvailabilityModule } from '../availability/availability.module';
   exports: [ReservationsService],
 })
 export class ReservationsModule {}
-

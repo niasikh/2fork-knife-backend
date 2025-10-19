@@ -17,4 +17,3 @@ export class AnalyticsController {
     return this.analyticsService.getRestaurantStats(restaurantId, startDate, endDate);
   }
 }
-

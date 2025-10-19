@@ -16,4 +16,3 @@ export class UpdateReservationDto extends PartialType(CreateReservationDto) {
   @IsString()
   internalNotes?: string;
 }
-

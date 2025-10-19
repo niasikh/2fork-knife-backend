@@ -12,4 +12,3 @@ export class ThrottleAuthGuard extends ThrottlerGuard {
     return req.ip || req.connection.remoteAddress || 'unknown';
   }
 }
-

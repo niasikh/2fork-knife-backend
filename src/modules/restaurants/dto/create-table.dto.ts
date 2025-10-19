@@ -23,4 +23,3 @@ export class CreateTableDto {
   @IsString()
   posTableId?: string;
 }
-

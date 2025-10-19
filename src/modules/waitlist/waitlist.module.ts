@@ -8,4 +8,3 @@ import { WaitlistController } from './waitlist.controller';
   exports: [WaitlistService],
 })
 export class WaitlistModule {}
-

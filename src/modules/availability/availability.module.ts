@@ -8,4 +8,3 @@ import { AvailabilityController } from './availability.controller';
   exports: [AvailabilityService],
 })
 export class AvailabilityModule {}
-

@@ -13,14 +13,13 @@ declare module 'express-serve-static-core' {
 export class RequestIdMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const requestId = (req.headers['x-request-id'] as string) || randomUUID();
-    
+
     // Attach to request
     req.requestId = requestId;
-    
+
     // Add to response headers
     res.setHeader('x-request-id', requestId);
-    
+
     next();
   }
 }
-

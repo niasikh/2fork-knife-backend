@@ -28,10 +28,7 @@ export class StripeWebhookController {
 
   @Public()
   @Post('stripe')
-  async handleStripeWebhook(
-    @Req() req: RawBodyRequest<Request>,
-    @Res() res: Response,
-  ) {
+  async handleStripeWebhook(@Req() req: RawBodyRequest<Request>, @Res() res: Response) {
     const sig = req.headers['stripe-signature'];
     const webhookSecret = this.config.get('STRIPE_WEBHOOK_SECRET');
 
@@ -45,12 +42,8 @@ export class StripeWebhookController {
     try {
       // Use raw body for signature verification
       const rawBody = req.rawBody || req.body;
-      
-      event = this.stripe.webhooks.constructEvent(
-        rawBody,
-        sig as string,
-        webhookSecret,
-      );
+
+      event = this.stripe.webhooks.constructEvent(rawBody, sig as string, webhookSecret);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       this.logger.error(`⚠️ Webhook signature verification failed: ${msg}`);
@@ -83,7 +76,7 @@ export class StripeWebhookController {
     // Enqueue job for async processing - return 200 fast
     try {
       await this.enqueueWebhookEvent(event);
-      
+
       // Return 200 immediately (Stripe requirement - must be < 100ms)
       return res.status(HttpStatus.OK).json({ received: true });
     } catch (error: unknown) {
@@ -123,4 +116,3 @@ export class StripeWebhookController {
     }
   }
 }
-

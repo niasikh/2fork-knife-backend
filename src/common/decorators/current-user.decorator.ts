@@ -6,4 +6,3 @@ export const CurrentUser = createParamDecorator((data: unknown, context: Executi
   const request = ctx.getContext().req || context.switchToHttp().getRequest();
   return request.user;
 });
-

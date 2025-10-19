@@ -22,10 +22,7 @@ export class ReservationResolver {
   }
 
   @Mutation(() => ReservationType, { name: 'createReservation' })
-  async createReservation(
-    @Args('input') input: CreateReservationInput,
-    @CurrentUser() user: any,
-  ) {
+  async createReservation(@Args('input') input: CreateReservationInput, @CurrentUser() user: any) {
     return this.reservationsService.create(input, user.id);
   }
 
@@ -38,4 +35,3 @@ export class ReservationResolver {
     return this.reservationsService.cancel(id, { reason }, user.id);
   }
 }
-

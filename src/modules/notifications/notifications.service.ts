@@ -13,4 +13,3 @@ export class NotificationsService {
     return { message: 'Notification sent (placeholder)' };
   }
 }
-

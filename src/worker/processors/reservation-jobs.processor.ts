@@ -18,19 +18,19 @@ export class ReservationJobsProcessor extends WorkerHost {
       switch (job.name) {
         case 'send-confirmation':
           return await this.sendConfirmation(job.data);
-        
+
         case 'send-reminder':
           return await this.sendReminder(job.data);
-        
+
         case 'process-no-show':
           return await this.processNoShow(job.data);
-        
+
         case 'check-late-arrival':
           return await this.checkLateArrival(job.data);
-        
+
         case 'update-guest-stats':
           return await this.updateGuestStats(job.data);
-        
+
         default:
           this.logger.warn(`Unknown job type: ${job.name}`);
           return { skipped: true };
@@ -43,7 +43,7 @@ export class ReservationJobsProcessor extends WorkerHost {
 
   private async sendConfirmation(data: { reservationId: string }) {
     this.logger.log(`Sending confirmation for reservation ${data.reservationId}`);
-    
+
     const reservation = await this.prisma.reservation.findUnique({
       where: { id: data.reservationId },
       include: { restaurant: true },
@@ -55,13 +55,13 @@ export class ReservationJobsProcessor extends WorkerHost {
 
     // TODO: Actually send email/SMS
     this.logger.log(`Would send confirmation to ${reservation.guestEmail}`);
-    
+
     return { sent: true, to: reservation.guestEmail };
   }
 
   private async sendReminder(data: { reservationId: string }) {
     this.logger.log(`Sending reminder for reservation ${data.reservationId}`);
-    
+
     const reservation = await this.prisma.reservation.findUnique({
       where: { id: data.reservationId },
     });
@@ -81,7 +81,7 @@ export class ReservationJobsProcessor extends WorkerHost {
 
   private async processNoShow(data: { reservationId: string }) {
     this.logger.log(`Processing no-show for ${data.reservationId}`);
-    
+
     // Update reservation status
     await this.prisma.reservation.update({
       where: { id: data.reservationId },
@@ -92,7 +92,7 @@ export class ReservationJobsProcessor extends WorkerHost {
     });
 
     // TODO: Process no-show fee if applicable
-    
+
     return { processed: true };
   }
 
@@ -123,4 +123,3 @@ export class ReservationJobsProcessor extends WorkerHost {
     return { updated: true, stats };
   }
 }
-

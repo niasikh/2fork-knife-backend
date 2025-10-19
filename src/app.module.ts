@@ -108,7 +108,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
             inject: [ConfigService],
             useFactory: (config: ConfigService) => {
               const isProd = config.get('NODE_ENV') === 'production';
-              
+
               return {
                 autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
                 sortSchema: true,
@@ -143,9 +143,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     HealthModule,
 
     // GraphQL BFF (conditional)
-    ...(process.env.ENABLE_GRAPHQL === 'true' 
-      ? [GraphqlModule]
-      : []),
+    ...(process.env.ENABLE_GRAPHQL === 'true' ? [GraphqlModule] : []),
 
     // Features
     AuthModule,
@@ -165,4 +163,3 @@ import { WebhooksModule } from './webhooks/webhooks.module';
   ],
 })
 export class AppModule {}
-

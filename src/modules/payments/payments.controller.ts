@@ -12,4 +12,3 @@ export class PaymentsController {
     return this.paymentsService.createPaymentIntent(body.reservationId, body.amount);
   }
 }
-

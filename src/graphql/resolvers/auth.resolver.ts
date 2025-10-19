@@ -38,4 +38,3 @@ export class AuthResolver {
     return true;
   }
 }
-

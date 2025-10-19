@@ -28,4 +28,3 @@ export class PaymentsService {
     return { message: 'Payment module - implementation pending' };
   }
 }
-

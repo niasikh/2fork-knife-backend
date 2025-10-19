@@ -33,4 +33,3 @@ export class CreateBlockDto {
   @IsString({ each: true })
   affectedTables?: string[];
 }
-

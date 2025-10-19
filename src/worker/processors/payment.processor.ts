@@ -42,4 +42,3 @@ export class PaymentProcessor extends WorkerHost {
     return { charged: true, amount: data.feeAmount };
   }
 }
-

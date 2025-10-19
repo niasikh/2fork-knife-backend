@@ -32,4 +32,3 @@ export class GuestsController {
     return this.guestsService.updateTags(id, body.tags);
   }
 }
-

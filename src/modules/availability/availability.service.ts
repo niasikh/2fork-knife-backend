@@ -12,12 +12,7 @@ export class AvailabilityService {
   /**
    * Check availability for a specific date, time, and party size
    */
-  async checkAvailability(
-    restaurantId: string,
-    date: Date,
-    time: string,
-    partySize: number,
-  ) {
+  async checkAvailability(restaurantId: string, date: Date, time: string, partySize: number) {
     const restaurant = await this.prisma.restaurant.findUnique({
       where: { id: restaurantId },
       include: {
@@ -287,4 +282,3 @@ export class AvailabilityService {
     return availableTables;
   }
 }
-

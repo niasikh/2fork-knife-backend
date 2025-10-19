@@ -35,4 +35,3 @@ export class UserType {
   @Field({ nullable: true })
   lastLoginAt?: Date;
 }
-

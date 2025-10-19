@@ -47,4 +47,3 @@ export class PrismaExceptionFilter extends BaseExceptionFilter {
     response.status(status).json(errorResponse);
   }
 }
-

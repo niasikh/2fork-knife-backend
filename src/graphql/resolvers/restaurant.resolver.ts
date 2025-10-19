@@ -30,4 +30,3 @@ export class RestaurantResolver {
     return this.restaurantsService.findBySlug(slug);
   }
 }
-

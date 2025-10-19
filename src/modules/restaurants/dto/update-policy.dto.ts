@@ -71,4 +71,3 @@ export class UpdatePolicyDto {
   @IsBoolean()
   autoConfirm?: boolean;
 }
-

@@ -71,4 +71,3 @@ export class RestaurantType {
   @Field()
   createdAt: Date;
 }
-

@@ -158,10 +158,7 @@ export class ReservationsService {
         },
         experience: true,
       },
-      orderBy: [
-        { reservationDate: 'asc' },
-        { startTime: 'asc' },
-      ],
+      orderBy: [{ reservationDate: 'asc' }, { startTime: 'asc' }],
     });
   }
 
@@ -274,9 +271,7 @@ export class ReservationsService {
         const cutoffTime = addHours(new Date(), restaurant.policy.modificationCutoff / 60);
 
         if (reservationTime < cutoffTime) {
-          throw new BadRequestException(
-            'Modification cutoff time has passed for this reservation',
-          );
+          throw new BadRequestException('Modification cutoff time has passed for this reservation');
         }
       }
 
@@ -349,7 +344,8 @@ export class ReservationsService {
     }
 
     // Check cancellation policy
-    const _restaurant = await this.prisma.restaurant.findUnique({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const restaurant = await this.prisma.restaurant.findUnique({
       where: { id: reservation.restaurantId },
       include: { policy: true },
     });
@@ -505,7 +501,12 @@ export class ReservationsService {
     return `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
   }
 
-  private async createAuditLog(reservationId: string, action: string, userId: string, changes: any) {
+  private async createAuditLog(
+    reservationId: string,
+    action: string,
+    userId: string,
+    changes: any,
+  ) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -529,10 +530,7 @@ export class ReservationsService {
     const user = await this.prisma.user.findFirst({
       where: {
         id: userId,
-        OR: [
-          { restaurantId },
-          { role: 'ADMIN' },
-        ],
+        OR: [{ restaurantId }, { role: 'ADMIN' }],
       },
     });
 
@@ -555,7 +553,7 @@ export class ReservationsService {
     const avgPartySize =
       reservations.reduce((sum, r) => sum + r.partySize, 0) / totalVisits || null;
     const sortedReservations = reservations.sort(
-      (a, b) => b.reservationDate.getTime() - a.reservationDate.getTime()
+      (a, b) => b.reservationDate.getTime() - a.reservationDate.getTime(),
     );
     const lastVisitDate = sortedReservations[0]?.reservationDate ?? null;
 
@@ -569,4 +567,3 @@ export class ReservationsService {
     });
   }
 }
-

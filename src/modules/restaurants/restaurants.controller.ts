@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { RestaurantsService } from './restaurants.service';
 import {
   CreateRestaurantDto,
@@ -71,11 +61,7 @@ export class RestaurantsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(
-    UserRole.RESTAURANT_OWNER,
-    UserRole.RESTAURANT_MANAGER,
-    UserRole.ADMIN,
-  )
+  @Roles(UserRole.RESTAURANT_OWNER, UserRole.RESTAURANT_MANAGER, UserRole.ADMIN)
   @Put(':id')
   async update(
     @Param('id') id: string,
@@ -103,11 +89,7 @@ export class RestaurantsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(
-    UserRole.RESTAURANT_OWNER,
-    UserRole.RESTAURANT_MANAGER,
-    UserRole.ADMIN,
-  )
+  @Roles(UserRole.RESTAURANT_OWNER, UserRole.RESTAURANT_MANAGER, UserRole.ADMIN)
   @Post(':restaurantId/areas')
   async createArea(
     @Param('restaurantId') restaurantId: string,
@@ -118,11 +100,7 @@ export class RestaurantsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(
-    UserRole.RESTAURANT_OWNER,
-    UserRole.RESTAURANT_MANAGER,
-    UserRole.ADMIN,
-  )
+  @Roles(UserRole.RESTAURANT_OWNER, UserRole.RESTAURANT_MANAGER, UserRole.ADMIN)
   @Put('areas/:areaId')
   async updateArea(
     @Param('areaId') areaId: string,
@@ -133,11 +111,7 @@ export class RestaurantsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(
-    UserRole.RESTAURANT_OWNER,
-    UserRole.RESTAURANT_MANAGER,
-    UserRole.ADMIN,
-  )
+  @Roles(UserRole.RESTAURANT_OWNER, UserRole.RESTAURANT_MANAGER, UserRole.ADMIN)
   @Delete('areas/:areaId')
   async deleteArea(@Param('areaId') areaId: string, @CurrentUser() user: any) {
     return this.restaurantsService.deleteArea(areaId, user.id);
@@ -154,11 +128,7 @@ export class RestaurantsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(
-    UserRole.RESTAURANT_OWNER,
-    UserRole.RESTAURANT_MANAGER,
-    UserRole.ADMIN,
-  )
+  @Roles(UserRole.RESTAURANT_OWNER, UserRole.RESTAURANT_MANAGER, UserRole.ADMIN)
   @Post(':restaurantId/tables')
   async createTable(
     @Param('restaurantId') restaurantId: string,
@@ -169,11 +139,7 @@ export class RestaurantsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(
-    UserRole.RESTAURANT_OWNER,
-    UserRole.RESTAURANT_MANAGER,
-    UserRole.ADMIN,
-  )
+  @Roles(UserRole.RESTAURANT_OWNER, UserRole.RESTAURANT_MANAGER, UserRole.ADMIN)
   @Put('tables/:tableId')
   async updateTable(
     @Param('tableId') tableId: string,
@@ -184,11 +150,7 @@ export class RestaurantsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(
-    UserRole.RESTAURANT_OWNER,
-    UserRole.RESTAURANT_MANAGER,
-    UserRole.ADMIN,
-  )
+  @Roles(UserRole.RESTAURANT_OWNER, UserRole.RESTAURANT_MANAGER, UserRole.ADMIN)
   @Delete('tables/:tableId')
   async deleteTable(@Param('tableId') tableId: string, @CurrentUser() user: any) {
     return this.restaurantsService.deleteTable(tableId, user.id);
@@ -211,11 +173,7 @@ export class RestaurantsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(
-    UserRole.RESTAURANT_OWNER,
-    UserRole.RESTAURANT_MANAGER,
-    UserRole.ADMIN,
-  )
+  @Roles(UserRole.RESTAURANT_OWNER, UserRole.RESTAURANT_MANAGER, UserRole.ADMIN)
   @Post(':restaurantId/shifts')
   async createShift(
     @Param('restaurantId') restaurantId: string,
@@ -226,11 +184,7 @@ export class RestaurantsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(
-    UserRole.RESTAURANT_OWNER,
-    UserRole.RESTAURANT_MANAGER,
-    UserRole.ADMIN,
-  )
+  @Roles(UserRole.RESTAURANT_OWNER, UserRole.RESTAURANT_MANAGER, UserRole.ADMIN)
   @Put('shifts/:shiftId')
   async updateShift(
     @Param('shiftId') shiftId: string,
@@ -241,11 +195,7 @@ export class RestaurantsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(
-    UserRole.RESTAURANT_OWNER,
-    UserRole.RESTAURANT_MANAGER,
-    UserRole.ADMIN,
-  )
+  @Roles(UserRole.RESTAURANT_OWNER, UserRole.RESTAURANT_MANAGER, UserRole.ADMIN)
   @Delete('shifts/:shiftId')
   async deleteShift(@Param('shiftId') shiftId: string, @CurrentUser() user: any) {
     return this.restaurantsService.deleteShift(shiftId, user.id);
@@ -262,11 +212,7 @@ export class RestaurantsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(
-    UserRole.RESTAURANT_OWNER,
-    UserRole.RESTAURANT_MANAGER,
-    UserRole.ADMIN,
-  )
+  @Roles(UserRole.RESTAURANT_OWNER, UserRole.RESTAURANT_MANAGER, UserRole.ADMIN)
   @Put(':restaurantId/policy')
   async updatePolicy(
     @Param('restaurantId') restaurantId: string,
@@ -295,11 +241,7 @@ export class RestaurantsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(
-    UserRole.RESTAURANT_OWNER,
-    UserRole.RESTAURANT_MANAGER,
-    UserRole.ADMIN,
-  )
+  @Roles(UserRole.RESTAURANT_OWNER, UserRole.RESTAURANT_MANAGER, UserRole.ADMIN)
   @Post(':restaurantId/blocks')
   async createBlock(
     @Param('restaurantId') restaurantId: string,
@@ -310,14 +252,9 @@ export class RestaurantsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(
-    UserRole.RESTAURANT_OWNER,
-    UserRole.RESTAURANT_MANAGER,
-    UserRole.ADMIN,
-  )
+  @Roles(UserRole.RESTAURANT_OWNER, UserRole.RESTAURANT_MANAGER, UserRole.ADMIN)
   @Delete('blocks/:blockId')
   async deleteBlock(@Param('blockId') blockId: string, @CurrentUser() user: any) {
     return this.restaurantsService.deleteBlock(blockId, user.id);
   }
 }
-

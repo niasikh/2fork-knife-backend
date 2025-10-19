@@ -12,4 +12,3 @@ export class AuthPayloadType {
   @Field()
   refreshToken: string;
 }
-

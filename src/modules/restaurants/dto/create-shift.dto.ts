@@ -52,4 +52,3 @@ export class CreateShiftDto {
   @IsBoolean()
   isActive?: boolean;
 }
-

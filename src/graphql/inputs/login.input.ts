@@ -8,4 +8,3 @@ export class LoginInput {
   @Field()
   password: string;
 }
-

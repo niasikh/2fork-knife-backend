@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, ForbiddenException, ConflictException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  ConflictException,
+  Logger,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
   CreateRestaurantDto,
@@ -93,11 +99,7 @@ export class RestaurantsService {
           },
         },
       },
-      orderBy: [
-        { isPremium: 'desc' },
-        { rating: 'desc' },
-        { name: 'asc' },
-      ],
+      orderBy: [{ isPremium: 'desc' }, { rating: 'desc' }, { name: 'asc' }],
     });
   }
 
@@ -111,10 +113,7 @@ export class RestaurantsService {
           },
         },
         shifts: {
-          orderBy: [
-            { dayOfWeek: 'asc' },
-            { startTime: 'asc' },
-          ],
+          orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
         },
         policy: true,
         experiences: {
@@ -155,10 +154,7 @@ export class RestaurantsService {
         },
         shifts: {
           where: { isActive: true },
-          orderBy: [
-            { dayOfWeek: 'asc' },
-            { startTime: 'asc' },
-          ],
+          orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
         },
         policy: true,
         _count: {
@@ -395,10 +391,7 @@ export class RestaurantsService {
 
     return this.prisma.shift.findMany({
       where,
-      orderBy: [
-        { dayOfWeek: 'asc' },
-        { startTime: 'asc' },
-      ],
+      orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
     });
   }
 
@@ -493,7 +486,9 @@ export class RestaurantsService {
       },
     });
 
-    this.logger.log(`Block created for restaurant ${restaurantId}: ${dto.startDate} - ${dto.endDate}`);
+    this.logger.log(
+      `Block created for restaurant ${restaurantId}: ${dto.startDate} - ${dto.endDate}`,
+    );
 
     return block;
   }
@@ -502,10 +497,7 @@ export class RestaurantsService {
     const where: any = { restaurantId };
 
     if (startDate && endDate) {
-      where.AND = [
-        { startDate: { lte: endDate } },
-        { endDate: { gte: startDate } },
-      ];
+      where.AND = [{ startDate: { lte: endDate } }, { endDate: { gte: startDate } }];
     }
 
     return this.prisma.restaurantBlock.findMany({
@@ -566,4 +558,3 @@ export class RestaurantsService {
     return restaurant;
   }
 }
-
