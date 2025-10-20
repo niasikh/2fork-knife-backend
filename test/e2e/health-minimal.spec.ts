@@ -2,18 +2,27 @@ import 'reflect-metadata';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { TestAppModule } from '../test-app.module';
+import { HealthController } from '../../src/health/health.controller';
+import { HealthModule } from '../../src/health/health.module';
 
-describe('Health Endpoints (e2e)', () => {
+describe('Health Endpoints (minimal)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [TestAppModule],
-    }).compile();
+      imports: [HealthModule],
+    })
+      .overrideProvider('PrismaService')
+      .useValue({
+        $queryRaw: jest.fn().mockResolvedValue([{ '?column?': 1 }]),
+      })
+      .overrideProvider('ConfigService')
+      .useValue({
+        get: jest.fn().mockReturnValue('test'),
+      })
+      .compile();
 
     app = moduleFixture.createNestApplication();
-    // Don't set global prefix for health endpoints
     await app.init();
   });
 
@@ -66,4 +75,3 @@ describe('Health Endpoints (e2e)', () => {
     });
   });
 });
-

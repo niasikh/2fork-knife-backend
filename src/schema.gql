@@ -1,0 +1,137 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthPayloadType {
+  accessToken: String!
+  refreshToken: String!
+  user: UserType!
+}
+
+type AvailabilityType {
+  available: Boolean!
+  reason: String
+}
+
+input CreateReservationInput {
+  dietaryNotes: String
+  experienceId: String
+  guestEmail: String!
+  guestName: String!
+  guestPhone: String!
+  occasion: String
+  partySize: Int!
+  reservationDate: String!
+  restaurantId: String!
+  seatingPreference: String
+  specialRequests: String
+  startTime: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input LoginInput {
+  identifier: String!
+  password: String!
+}
+
+type Mutation {
+  cancelReservation(id: String!, reason: String): ReservationType!
+  createReservation(input: CreateReservationInput!): ReservationType!
+  login(input: LoginInput!): AuthPayloadType!
+  logout: Boolean!
+  register(input: RegisterInput!): AuthPayloadType!
+}
+
+type Query {
+  availableSlots(date: String!, partySize: Float!, restaurantId: String!): [TimeSlotType!]!
+  checkAvailability(date: String!, partySize: Float!, restaurantId: String!, time: String!): AvailabilityType!
+  me: UserType!
+  myReservations: [ReservationType!]!
+  reservation(id: String!): ReservationType!
+  restaurant(id: String!): RestaurantType!
+  restaurantBySlug(slug: String!): RestaurantType!
+  restaurants(city: String, cuisine: String, search: String): [RestaurantType!]!
+}
+
+input RegisterInput {
+  email: String!
+  firstName: String!
+  lastName: String!
+  password: String!
+  phone: String
+}
+
+type ReservationType {
+  cancelledAt: DateTime
+  completedAt: DateTime
+  confirmationCode: String!
+  confirmedAt: DateTime
+  createdAt: DateTime!
+  dietaryNotes: String
+  guestEmail: String!
+  guestName: String!
+  guestPhone: String!
+  id: ID!
+  occasion: String
+  partySize: Int!
+  reservationDate: DateTime!
+  restaurant: RestaurantType
+  restaurantId: String!
+  seatedAt: DateTime
+  seatingPreference: String
+  source: String!
+  specialRequests: String
+  startTime: String!
+  status: String!
+  updatedAt: DateTime!
+}
+
+type RestaurantType {
+  address: String!
+  capacity: Int
+  city: String!
+  coverImage: String
+  createdAt: DateTime!
+  cuisine: [String!]!
+  description: String
+  district: String
+  email: String!
+  id: ID!
+  imageUrls: [String!]!
+  isActive: Boolean!
+  isVerified: Boolean!
+  latitude: Float
+  logoUrl: String
+  longitude: Float
+  name: String!
+  phone: String!
+  priceRange: Int!
+  rating: Float
+  reviewCount: Int!
+  slug: String!
+  website: String
+}
+
+type TimeSlotType {
+  available: Boolean!
+  shift: String
+  time: String!
+}
+
+type UserType {
+  createdAt: DateTime!
+  email: String!
+  emailVerified: Boolean!
+  firstName: String!
+  id: ID!
+  isActive: Boolean!
+  lastLoginAt: DateTime
+  lastName: String!
+  phone: String
+  phoneVerified: Boolean!
+  role: String!
+}

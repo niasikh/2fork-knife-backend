@@ -1,6 +1,7 @@
+import 'reflect-metadata';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../../src/app.module';
 
 describe('Authentication Flow (e2e)', () => {
@@ -33,7 +34,7 @@ describe('Authentication Flow (e2e)', () => {
         .post('/api/v1/auth/register')
         .send(testUser)
         .expect(201)
-        .expect((res) => {
+        .expect((res: any) => {
           expect(res.body).toHaveProperty('user');
           expect(res.body).toHaveProperty('accessToken');
           expect(res.body).toHaveProperty('refreshToken');
@@ -70,7 +71,7 @@ describe('Authentication Flow (e2e)', () => {
           password: testUser.password,
         })
         .expect(200)
-        .expect((res) => {
+        .expect((res: any) => {
           expect(res.body).toHaveProperty('user');
           expect(res.body).toHaveProperty('accessToken');
           expect(res.body.user.email).toBe(testUser.email);
@@ -94,7 +95,7 @@ describe('Authentication Flow (e2e)', () => {
         .get('/api/v1/auth/me')
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200)
-        .expect((res) => {
+        .expect((res: any) => {
           expect(res.body.email).toBe(testUser.email);
         });
     });
@@ -112,7 +113,7 @@ describe('Authentication Flow (e2e)', () => {
         .post('/api/v1/auth/logout')
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200)
-        .expect((res) => {
+        .expect((res: any) => {
           expect(res.body.message).toBeDefined();
         });
     });

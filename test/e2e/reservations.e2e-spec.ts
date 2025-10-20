@@ -1,6 +1,7 @@
+import 'reflect-metadata';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../../src/app.module';
 
 describe('Reservations Flow (e2e)', () => {
@@ -63,7 +64,7 @@ describe('Reservations Flow (e2e)', () => {
           guestEmail: 'john@example.com',
           guestPhone: '+995555123456',
         })
-        .expect((res) => {
+        .expect((res: any) => {
           expect([200, 201, 400]).toContain(res.status); // May fail validation
           if (res.status === 201 || res.status === 200) {
             expect(res.body).toHaveProperty('id');
@@ -86,7 +87,7 @@ describe('Reservations Flow (e2e)', () => {
         .get('/api/v1/reservations')
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200)
-        .expect((res) => {
+        .expect((res: any) => {
           expect(Array.isArray(res.body)).toBe(true);
         });
     });
