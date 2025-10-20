@@ -11,7 +11,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: NODE_OPTIONS
-        value: --max-old-space-size=768 --max-semi-space-size=16
+        value: --max-old-space-size=1536 --max-semi-space-size=32
       - key: WEB_CONCURRENCY
         value: "1"
       - key: UV_THREADPOOL_SIZE
